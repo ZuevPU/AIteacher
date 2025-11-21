@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a1a2e">
+    <title>База нейросетей для учителя</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="nav-bar" role="navigation" aria-label="Основная навигация">
+        <button class="nav-btn active" data-tab="tools" aria-label="Нейросети для учителя">
+            <span class="nav-icon">🤖</span>
+            <span class="nav-text">Нейросети</span>
+        </button>
+        <button class="nav-btn" data-tab="prompts" aria-label="Промпты для учителя">
+            <span class="nav-icon">💬</span>
+            <span class="nav-text">Промпты</span>
+        </button>
+        <button class="nav-btn" data-tab="cases" aria-label="Примеры использования">
+            <span class="nav-icon">📚</span>
+            <span class="nav-text">Примеры</span>
+        </button>
+    </nav>
+
+    <!-- Заголовок и поиск -->
+    <header class="header">
+        <h1 class="header-title">База нейросетей для учителя</h1>
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-input" placeholder="Поиск..." aria-label="Поиск по базе">
+            <button class="search-clear" id="search-clear" aria-label="Очистить поиск" style="display: none;">✕</button>
+        </div>
+        <div class="filter-container" id="filter-container"></div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="main-content" id="main-content" role="main">
+        <!-- Вкладка: Нейросети -->
+        <section class="tab-content active" id="tools-tab" aria-labelledby="tools-tab">
+            <div class="cards-grid" id="tools-grid"></div>
+        </section>
+
+        <!-- Вкладка: Промпты -->
+        <section class="tab-content" id="prompts-tab" aria-labelledby="prompts-tab">
+            <div class="cards-grid" id="prompts-grid"></div>
+        </section>
+
+        <!-- Вкладка: Примеры -->
+        <section class="tab-content" id="cases-tab" aria-labelledby="cases-tab">
+            <div class="cards-grid" id="cases-grid"></div>
+        </section>
+    </main>
+
+    <!-- Модальное окно для промпта -->
+    <div class="modal" id="prompt-modal" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title" class="modal-title"></h2>
+                <button class="modal-close" id="modal-close" aria-label="Закрыть">✕</button>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="copy-prompt-btn">Скопировать промпт</button>
+                <button class="btn btn-secondary" id="copy-template-btn">Копировать как шаблон</button>
+                <button class="btn btn-icon" id="favorite-prompt-btn" aria-label="Добавить в закладки">⭐</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для карточки инструмента -->
+    <div class="modal" id="tool-modal" role="dialog" aria-labelledby="tool-modal-title" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="tool-modal-title" class="modal-title"></h2>
+                <button class="modal-close" id="tool-modal-close" aria-label="Закрыть">✕</button>
+            </div>
+            <div class="modal-body" id="tool-modal-body"></div>
+            <div class="modal-footer">
+                <a class="btn btn-primary" id="tool-link-btn" target="_blank" rel="noopener noreferrer">Открыть сайт</a>
+                <button class="btn btn-icon" id="favorite-tool-btn" aria-label="Добавить в закладки">⭐</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для кейса -->
+    <div class="modal" id="case-modal" role="dialog" aria-labelledby="case-modal-title" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="case-modal-title" class="modal-title"></h2>
+                <button class="modal-close" id="case-modal-close" aria-label="Закрыть">✕</button>
+            </div>
+            <div class="modal-body" id="case-modal-body"></div>
+            <div class="modal-footer">
+                <button class="btn btn-icon" id="favorite-case-btn" aria-label="Добавить в закладки">⭐</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast уведомления -->
+    <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
+    <!-- Кнопка настроек (плавающая) -->
+    <button class="fab" id="settings-btn" aria-label="Настройки">⚙️</button>
+
+    <!-- Панель настроек -->
+    <div class="settings-panel" id="settings-panel" aria-hidden="true">
+        <div class="settings-content">
+            <div class="settings-header">
+                <h2>Настройки</h2>
+                <button class="settings-close" id="settings-close" aria-label="Закрыть настройки">✕</button>
+            </div>
+            <div class="settings-body">
+                <div class="setting-item">
+                    <label for="theme-select">Тема:</label>
+                    <select id="theme-select" class="setting-select">
+                        <option value="dark">Тёмная</option>
+                        <option value="light">Светлая</option>
+                        <option value="auto">Авто</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label for="font-size-select">Размер шрифта:</label>
+                    <select id="font-size-select" class="setting-select">
+                        <option value="small">Маленький</option>
+                        <option value="medium" selected>Средний</option>
+                        <option value="large">Большой</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label for="button-size-select">Размер кнопок:</label>
+                    <select id="button-size-select" class="setting-select">
+                        <option value="small">Маленький</option>
+                        <option value="medium" selected>Средний</option>
+                        <option value="large">Большой</option>
+                    </select>
+                </div>
+                <div class="setting-actions">
+                    <button class="btn btn-primary" id="export-btn">Экспорт данных</button>
+                    <button class="btn btn-secondary" id="import-btn">Импорт данных</button>
+                    <input type="file" id="import-file" accept=".json,.csv" style="display: none;">
+                </div>
+                <div class="setting-actions">
+                    <button class="btn btn-secondary" id="clear-cache-btn">Очистить кэш</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Индикатор оффлайн -->
+    <div class="offline-indicator" id="offline-indicator" style="display: none;">
+        <span>📴 Оффлайн: используется кэш</span>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+
