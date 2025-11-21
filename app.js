@@ -474,11 +474,33 @@ function setupModalListeners() {
   }
   
   if (copyPromptBtn) {
-    copyPromptBtn.addEventListener('click', copyPrompt);
+    // Универсальная обработка для всех устройств
+    const handleCopyPrompt = (e) => {
+      e.stopPropagation();
+      copyPrompt();
+    };
+    
+    copyPromptBtn.addEventListener('click', handleCopyPrompt);
+    // Для мобильных устройств также обрабатываем touch события
+    copyPromptBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      handleCopyPrompt(e);
+    }, { passive: false });
   }
   
   if (copyTemplateBtn) {
-    copyTemplateBtn.addEventListener('click', copyPromptAsTemplate);
+    // Универсальная обработка для всех устройств
+    const handleCopyTemplate = (e) => {
+      e.stopPropagation();
+      copyPromptAsTemplate();
+    };
+    
+    copyTemplateBtn.addEventListener('click', handleCopyTemplate);
+    // Для мобильных устройств также обрабатываем touch события
+    copyTemplateBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      handleCopyTemplate(e);
+    }, { passive: false });
   }
   
   if (favoritePromptBtn) {
@@ -557,6 +579,8 @@ function openPromptModal(id) {
   const title = document.getElementById('modal-title');
   const body = document.getElementById('modal-body');
   const favoriteBtn = document.getElementById('favorite-prompt-btn');
+  const copyPromptBtn = document.getElementById('copy-prompt-btn');
+  const copyTemplateBtn = document.getElementById('copy-template-btn');
   
   modal.dataset.id = id;
   title.textContent = prompt.title;
@@ -581,6 +605,17 @@ function openPromptModal(id) {
   // Обновляем кнопку избранного
   if (favoriteBtn) {
     favoriteBtn.classList.toggle('active', isFavorite('prompts', id));
+  }
+  
+  // Убеждаемся, что кнопки доступны и кликабельны
+  if (copyPromptBtn) {
+    copyPromptBtn.style.pointerEvents = 'auto';
+    copyPromptBtn.style.zIndex = '10';
+  }
+  
+  if (copyTemplateBtn) {
+    copyTemplateBtn.style.pointerEvents = 'auto';
+    copyTemplateBtn.style.zIndex = '10';
   }
   
   modal.setAttribute('aria-hidden', 'false');
@@ -737,7 +772,7 @@ function closeAllModals() {
   closeModal('case-modal');
 }
 
-function copyPrompt() {
+async function copyPrompt() {
   const modal = document.getElementById('prompt-modal');
   const id = modal.dataset.id;
   if (!id) return;
@@ -745,11 +780,13 @@ function copyPrompt() {
   const prompt = appData.prompts.find(p => p.id === id);
   if (!prompt) return;
   
-  copyToClipboard(prompt.prompt_text);
-  showToast('Промпт скопирован', 'success');
+  const success = await copyToClipboard(prompt.prompt_text);
+  if (success) {
+    showToast('Промпт скопирован', 'success');
+  }
 }
 
-function copyPromptAsTemplate() {
+async function copyPromptAsTemplate() {
   const modal = document.getElementById('prompt-modal');
   const id = modal.dataset.id;
   if (!id) return;
@@ -763,23 +800,82 @@ function copyPromptAsTemplate() {
     .replace(/\[класс\]/g, '8')
     .replace(/\[тема\]/g, 'Иммунитет');
   
-  copyToClipboard(template);
-  showToast('Шаблон скопирован', 'success');
+  const success = await copyToClipboard(template);
+  if (success) {
+    showToast('Шаблон скопирован', 'success');
+  }
 }
 
-function copyToClipboard(text) {
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text);
-  } else {
-    // Fallback для старых браузеров
+async function copyToClipboard(text) {
+  try {
+    // Пробуем Telegram Web App API (если доступен)
+    if (window.Telegram && window.Telegram.WebApp) {
+      try {
+        window.Telegram.WebApp.ready();
+        // Telegram Web App может иметь свой способ копирования
+        // Пробуем стандартный API
+      } catch (e) {
+        console.log('Telegram Web App доступен, но без специального API копирования');
+      }
+    }
+    
+    // Пробуем современный Clipboard API
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      // Проверяем, что мы в безопасном контексте (HTTPS или localhost)
+      if (window.isSecureContext || location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    }
+    
+    // Fallback для старых браузеров и мобильных устройств
     const textarea = document.createElement('textarea');
     textarea.value = text;
     textarea.style.position = 'fixed';
+    textarea.style.top = '0';
+    textarea.style.left = '0';
+    textarea.style.width = '2em';
+    textarea.style.height = '2em';
+    textarea.style.padding = '0';
+    textarea.style.border = 'none';
+    textarea.style.outline = 'none';
+    textarea.style.boxShadow = 'none';
+    textarea.style.background = 'transparent';
     textarea.style.opacity = '0';
+    textarea.style.zIndex = '9999';
+    textarea.setAttribute('readonly', '');
     document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textarea);
+    
+    // Для мобильных устройств используем другой подход
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      textarea.contentEditable = true;
+      textarea.readOnly = false;
+      const range = document.createRange();
+      range.selectNodeContents(textarea);
+      const selection = window.getSelection();
+      if (selection.rangeCount > 0) {
+        selection.removeAllRanges();
+      }
+      selection.addRange(range);
+      textarea.setSelectionRange(0, 999999);
+    } else {
+      textarea.focus();
+      textarea.select();
+    }
+    
+    try {
+      const successful = document.execCommand('copy');
+      document.body.removeChild(textarea);
+      return successful;
+    } catch (err) {
+      document.body.removeChild(textarea);
+      throw err;
+    }
+  } catch (err) {
+    console.error('Ошибка копирования:', err);
+    // Показываем текст в модальном окне для ручного копирования
+    showToast('Нажмите на текст промпта для выделения', 'error');
+    return false;
   }
 }
 
