@@ -191,9 +191,13 @@ function updateFavoriteButtons(type, id) {
 function setupEventListeners() {
   // Навигация по вкладкам
   document.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       const tab = btn.dataset.tab;
-      switchTab(tab);
+      if (tab) {
+        switchTab(tab);
+      }
     });
   });
   
@@ -257,9 +261,15 @@ function switchTab(tab) {
   // Очищаем фильтры
   currentFilters.category = null;
   currentFilters.tag = null;
-  document.getElementById('search-input').value = '';
+  const searchInput = document.getElementById('search-input');
+  if (searchInput) {
+    searchInput.value = '';
+  }
   currentFilters.search = '';
-  document.getElementById('search-clear').style.display = 'none';
+  const searchClear = document.getElementById('search-clear');
+  if (searchClear) {
+    searchClear.style.display = 'none';
+  }
   
   renderCurrentTab();
 }
@@ -311,7 +321,7 @@ function renderCurrentTab() {
     attachCardListeners();
   }
   
-  // Обновляем фильтры
+  // Обновляем фильтры (отключены)
   updateFilters();
 }
 
@@ -348,79 +358,11 @@ function filterItems(items) {
 }
 
 function updateFilters() {
+  // Фильтры отключены - убираем их из интерфейса
   const container = document.getElementById('filter-container');
-  if (!container) return;
-  
-  let allTags = new Set();
-  let allCategories = new Set();
-  
-  let items = [];
-  switch (currentTab) {
-    case 'tools':
-      items = appData.tools || [];
-      break;
-    case 'prompts':
-      items = appData.prompts || [];
-      break;
-    case 'cases':
-      items = appData.cases || [];
-      break;
+  if (container) {
+    container.innerHTML = '';
   }
-  
-  items.forEach(item => {
-    if (item.tags) {
-      item.tags.forEach(tag => allTags.add(tag));
-    }
-    if (item.category) {
-      allCategories.add(item.category);
-    }
-  });
-  
-  let html = '';
-  
-  // Категории
-  if (allCategories.size > 0 && currentTab === 'prompts') {
-    html += '<div class="filter-group">';
-    Array.from(allCategories).sort().forEach(cat => {
-      html += `<button class="filter-chip ${currentFilters.category === cat ? 'active' : ''}" 
-                       data-filter-type="category" 
-                       data-filter-value="${escapeHtml(cat)}">
-                ${escapeHtml(cat)}
-              </button>`;
-    });
-    html += '</div>';
-  }
-  
-  // Теги
-  if (allTags.size > 0) {
-    html += '<div class="filter-group">';
-    Array.from(allTags).sort().forEach(tag => {
-      html += `<button class="filter-chip ${currentFilters.tag === tag ? 'active' : ''}" 
-                       data-filter-type="tag" 
-                       data-filter-value="${escapeHtml(tag)}">
-                ${escapeHtml(tag)}
-              </button>`;
-    });
-    html += '</div>';
-  }
-  
-  container.innerHTML = html;
-  
-  // Обработчики фильтров
-  container.querySelectorAll('.filter-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      const type = chip.dataset.filterType;
-      const value = chip.dataset.filterValue;
-      
-      if (type === 'category') {
-        currentFilters.category = currentFilters.category === value ? null : value;
-      } else if (type === 'tag') {
-        currentFilters.tag = currentFilters.tag === value ? null : value;
-      }
-      
-      renderCurrentTab();
-    });
-  });
 }
 
 // ===== РЕНДЕРИНГ КАРТОЧЕК =====
@@ -440,7 +382,6 @@ function renderToolCard(tool) {
         </button>
       </div>
       <p class="card-short">${escapeHtml(tool.short)}</p>
-      ${tool.tags ? `<div class="card-tags">${tool.tags.map(tag => `<span class="card-tag">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
     </div>
   `;
 }
@@ -452,7 +393,6 @@ function renderPromptCard(prompt) {
       <div class="card-header">
         <div>
           <h3 class="card-title">${escapeHtml(prompt.title)}</h3>
-          ${prompt.category ? `<span class="card-tag">${escapeHtml(prompt.category)}</span>` : ''}
         </div>
         <button class="card-favorite ${isFav ? 'active' : ''}" 
                 data-type="prompts" 
@@ -462,7 +402,6 @@ function renderPromptCard(prompt) {
         </button>
       </div>
       ${prompt.notes ? `<p class="card-short">${escapeHtml(prompt.notes)}</p>` : ''}
-      ${prompt.tags ? `<div class="card-tags">${prompt.tags.map(tag => `<span class="card-tag">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
     </div>
   `;
 }
@@ -474,8 +413,6 @@ function renderCaseCard(caseItem) {
       <div class="card-header">
         <div>
           <h3 class="card-title">${escapeHtml(caseItem.title)}</h3>
-          ${caseItem.subject ? `<span class="card-tag">${escapeHtml(caseItem.subject)}</span>` : ''}
-          ${caseItem.grade ? `<span class="card-tag">${escapeHtml(caseItem.grade)}</span>` : ''}
         </div>
         <button class="card-favorite ${isFav ? 'active' : ''}" 
                 data-type="cases" 
@@ -485,7 +422,6 @@ function renderCaseCard(caseItem) {
         </button>
       </div>
       <p class="card-short">${escapeHtml(caseItem.description)}</p>
-      ${caseItem.tags ? `<div class="card-tags">${caseItem.tags.map(tag => `<span class="card-tag">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
     </div>
   `;
 }

@@ -152,6 +152,8 @@ body {
 .search-container {
   position: relative;
   margin-bottom: var(--spacing);
+  display: block;
+  visibility: visible;
 }
 
 .search-input {
@@ -197,10 +199,7 @@ body {
 }
 
 .filter-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: var(--spacing);
+  display: none; /* Фильтры отключены */
 }
 
 .filter-chip {
