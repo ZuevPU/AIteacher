@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Планетарная модель атома</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .atom-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+        }
+
+        .nucleus {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            margin: -20px 0 0 -20px;
+            background-color: #e74c3c;
+            border-radius: 50%;
+            z-index: 10;
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.7);
+        }
+
+        .orbit {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            border: 1px solid rgba(100, 100, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .orbit-1 {
+            width: 80px;
+            height: 80px;
+        }
+
+        .orbit-2 {
+            width: 140px;
+            height: 140px;
+        }
+
+        .orbit-3 {
+            width: 200px;
+            height: 200px;
+        }
+
+        .electron {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: #3498db;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.7);
+        }
+
+        .electron-1 {
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: orbit1 2s linear infinite;
+        }
+
+        .electron-2 {
+            top: 50%;
+            left: -6px;
+            transform: translateY(-50%);
+            animation: orbit2 4s linear infinite;
+        }
+
+        .electron-3 {
+            top: 50%;
+            right: -6px;
+            transform: translateY(-50%);
+            animation: orbit3 6s linear infinite;
+        }
+
+        @keyframes orbit1 {
+            0% { transform: translateX(-50%) rotate(0deg) translate(40px) rotate(0deg); }
+            100% { transform: translateX(-50%) rotate(360deg) translate(40px) rotate(-360deg); }
+        }
+
+        @keyframes orbit2 {
+            0% { transform: translateY(-50%) rotate(0deg) translate(70px) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg) translate(70px) rotate(-360deg); }
+        }
+
+        @keyframes orbit3 {
+            0% { transform: translateY(-50%) rotate(0deg) translate(100px) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg) translate(100px) rotate(-360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="atom-container">
+        <div class="nucleus"></div>
+        <div class="orbit orbit-1"></div>
+        <div class="orbit orbit-2"></div>
+        <div class="orbit orbit-3"></div>
+        <div class="electron electron-1"></div>
+        <div class="electron electron-2"></div>
+        <div class="electron electron-3"></div>
+    </div>
+</body>
+</html>
+
+

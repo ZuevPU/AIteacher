@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Исторический Платформер</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    #question {
+      font-size: 1.4rem;
+      margin: 10px 0 20px;
+      text-align: center;
+      max-width: 90vw;
+    }
+
+    #gameCanvas {
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      display: block;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="question">В каком году закончилась Великая Отечественная война?</div>
+  <canvas id="gameCanvas" width="400" height="500"></canvas>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Responsive canvas
+    function resizeCanvas() {
+      const scale = Math.min(window.innerWidth * 0.9 / 400, 1);
+      canvas.style.width = (400 * scale) + 'px';
+      canvas.style.height = (500 * scale) + 'px';
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // Player
+    const player = {
+      x: 185,
+      y: 400,
+      width: 30,
+      height: 30,
+      velY: 0,
+      isJumping: false,
+      grounded: false,
+      color: '#4A90E2'
+    };
+
+    // Platforms: [x, y, width, height, year, correct]
+    const platforms = [
+      { x: 150, y: 350, width: 100, height: 20, year: '1941', correct: false },
+      { x: 150, y: 250, width: 100, height: 20, year: '1945', correct: true },
+      { x: 150, y: 150, width: 100, height: 20, year: '1949', correct: false }
+    ];
+
+    const gravity = 0.5;
+    const jumpPower = -12;
+    let gameOver = false;
+
+    // Draw player as a simple student icon (stick figure style)
+    function drawPlayer() {
+      ctx.fillStyle = player.color;
+      // Head
+      ctx.beginPath();
+      ctx.arc(player.x + player.width / 2, player.y + 8, 6, 0, Math.PI * 2);
+      ctx.fill();
+      // Body
+      ctx.fillRect(player.x + player.width / 2 - 1, player.y + 14, 2, 12);
+      // Arms
+      ctx.fillRect(player.x + player.width / 2 - 6, player.y + 16, 12, 1);
+      // Legs
+      ctx.fillRect(player.x + player.width / 2 - 1, player.y + 26, 1, 6);
+      ctx.fillRect(player.x + player.width / 2, player.y + 26, 1, 6);
+    }
+
+    function drawPlatforms() {
+      platforms.forEach(plat => {
+        ctx.fillStyle = plat.correct && player.y + player.height <= plat.y + 10 ? '#4CAF50' : '#999';
+        ctx.fillRect(plat.x, plat.y, plat.width, plat.height);
+        ctx.fillStyle = 'white';
+        ctx.font = '14px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(plat.year, plat.x + plat.width / 2, plat.y + 15);
+      });
+    }
+
+    function updatePlayer() {
+      if (!gameOver) {
+        player.velY += gravity;
+        player.y += player.velY;
+
+        // Ground collision
+        if (player.y + player.height >= canvas.height) {
+          player.y = canvas.height - player.height;
+          player.velY = 0;
+          player.grounded = true;
+          gameOver = true;
+          player.color = '#F44336';
+        } else {
+          player.grounded = false;
+        }
+
+        // Platform collision
+        let onAnyPlatform = false;
+        platforms.forEach(plat => {
+          if (
+            player.x + player.width > plat.x &&
+            player.x < plat.x + plat.width &&
+            player.y + player.height <= plat.y &&
+            player.y + player.height + player.velY >= plat.y
+          ) {
+            player.y = plat.y - player.height;
+            player.velY = 0;
+            player.grounded = true;
+            onAnyPlatform = true;
+
+            if (!plat.correct) {
+              // Wrong platform: fall through after a moment
+              setTimeout(() => {
+                if (!gameOver) {
+                  player.velY = 2; // start falling
+                }
+              }, 300);
+              player.color = '#F44336';
+              gameOver = true;
+            } else {
+              player.color = '#4A90E2';
+            }
+          }
+        });
+      }
+    }
+
+    function jump() {
+      if (player.grounded && !gameOver) {
+        player.velY = jumpPower;
+        player.grounded = false;
+      }
+    }
+
+    function gameLoop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      updatePlayer();
+      drawPlatforms();
+      drawPlayer();
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Controls
+    window.addEventListener('click', jump);
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        jump();
+      }
+    });
+
+    gameLoop();
+  </script>
+</body>
+</html>
+
+

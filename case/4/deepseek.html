@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Планетарная модель атома</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: white;
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 900px;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+        }
+        
+        .atom-container {
+            position: relative;
+            width: 90vmin;
+            height: 90vmin;
+            max-width: 600px;
+            max-height: 600px;
+            margin: 0 auto;
+        }
+        
+        .nucleus {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #e74c3c, #c0392b);
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(231, 76, 60, 0.5);
+            z-index: 10;
+        }
+        
+        .nucleus::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #ff6b6b, #e74c3c);
+            border-radius: 50%;
+        }
+        
+        .nucleus::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background-color: #ff9f43;
+            border-radius: 50%;
+        }
+        
+        .orbit {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            border: 2px dashed rgba(52, 152, 219, 0.3);
+        }
+        
+        .orbit-1 {
+            width: 40%;
+            height: 40%;
+            animation: rotate-orbit 8s linear infinite;
+        }
+        
+        .orbit-2 {
+            width: 60%;
+            height: 60%;
+            animation: rotate-orbit 12s linear infinite;
+        }
+        
+        .orbit-3 {
+            width: 80%;
+            height: 80%;
+            animation: rotate-orbit 16s linear infinite;
+        }
+        
+        @keyframes rotate-orbit {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        .electron {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: radial-gradient(circle, #3498db, #2980b9);
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.7);
+            z-index: 5;
+        }
+        
+        .electron-1 {
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: move-electron-1 4s linear infinite;
+        }
+        
+        .electron-2 {
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            animation: move-electron-2 6s linear infinite;
+        }
+        
+        .electron-3 {
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: move-electron-3 8s linear infinite;
+        }
+        
+        @keyframes move-electron-1 {
+            0% { transform: translateX(-50%) rotate(0deg) translateY(-20vmin) rotate(0deg); }
+            100% { transform: translateX(-50%) rotate(360deg) translateY(-20vmin) rotate(-360deg); }
+        }
+        
+        @keyframes move-electron-2 {
+            0% { transform: translateY(-50%) rotate(0deg) translateX(30vmin) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg) translateX(30vmin) rotate(-360deg); }
+        }
+        
+        @keyframes move-electron-3 {
+            0% { transform: translateX(-50%) rotate(0deg) translateY(40vmin) rotate(0deg); }
+            100% { transform: translateX(-50%) rotate(360deg) translateY(40vmin) rotate(-360deg); }
+        }
+        
+        .controls {
+            margin-top: 40px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .control-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .control-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .control-btn:active {
+            transform: translateY(0);
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+        
+        .legend-nucleus { background: #e74c3c; }
+        .legend-electron { background: #3498db; }
+        
+        .legend-text {
+            color: #2c3e50;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .subtitle { font-size: 1rem; }
+            .electron { width: 20px; height: 20px; }
+            .nucleus { width: 60px; height: 60px; }
+            .nucleus::after { width: 45px; height: 45px; }
+            .nucleus::before { width: 30px; height: 30px; }
+            .control-btn { padding: 10px 20px; font-size: 1rem; }
+        }
+        
+        @media (max-width: 480px) {
+            h1 { font-size: 1.6rem; }
+            .controls { flex-direction: column; align-items: center; }
+            .control-btn { width: 200px; }
+            .legend { flex-direction: column; align-items: center; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Планетарная модель атома</h1>
+        <div class="subtitle">Модель Резерфорда-Бора с движущимися электронами</div>
+        
+        <div class="atom-container">
+            <div class="nucleus"></div>
+            <div class="orbit orbit-1"></div>
+            <div class="orbit orbit-2"></div>
+            <div class="orbit orbit-3"></div>
+            <div class="electron electron-1"></div>
+            <div class="electron electron-2"></div>
+            <div class="electron electron-3"></div>
+        </div>
+        
+        <div class="controls">
+            <button class="control-btn" id="speedUpBtn">Увеличить скорость</button>
+            <button class="control-btn" id="speedDownBtn">Уменьшить скорость</button>
+            <button class="control-btn" id="pauseBtn">Приостановить</button>
+            <button class="control-btn" id="resetBtn">Сбросить</button>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color legend-nucleus"></div>
+                <div class="legend-text">Ядро атома</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color legend-electron"></div>
+                <div class="legend-text">Электроны</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const orbits = document.querySelectorAll('.orbit');
+            const electrons = document.querySelectorAll('.electron');
+            const speedUpBtn = document.getElementById('speedUpBtn');
+            const speedDownBtn = document.getElementById('speedDownBtn');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            
+            let animationSpeed = 1;
+            let isPaused = false;
+            
+            function setSpeed(mult) {
+                if (isPaused) return;
+                orbits.forEach((orbit, idx) => {
+                    const base = [8,12,16][idx] || 10;
+                    orbit.style.animationDuration = `${base / mult}s`;
+                });
+                electrons.forEach((electron, idx) => {
+                    const base = [4,6,8][idx] || 6;
+                    electron.style.animationDuration = `${base / mult}s`;
+                });
+            }
+            
+            function pauseAnimations() {
+                isPaused = true;
+                orbits.forEach(o => (o.style.animationPlayState = 'paused'));
+                electrons.forEach(e => (e.style.animationPlayState = 'paused'));
+                pauseBtn.textContent = 'Возобновить';
+            }
+            
+            function resumeAnimations() {
+                isPaused = false;
+                orbits.forEach(o => (o.style.animationPlayState = 'running'));
+                electrons.forEach(e => (e.style.animationPlayState = 'running'));
+                pauseBtn.textContent = 'Приостановить';
+                setSpeed(animationSpeed);
+            }
+            
+            function resetAnimations() {
+                animationSpeed = 1;
+                isPaused = false;
+                orbits.forEach(o => (o.style.animationPlayState = 'running'));
+                electrons.forEach(e => (e.style.animationPlayState = 'running'));
+                pauseBtn.textContent = 'Приостановить';
+                setSpeed(animationSpeed);
+            }
+            
+            speedUpBtn.addEventListener('click', () => {
+                if (animationSpeed < 3) {
+                    animationSpeed += 0.5;
+                    setSpeed(animationSpeed);
+                }
+            });
+            
+            speedDownBtn.addEventListener('click', () => {
+                if (animationSpeed > 0.5) {
+                    animationSpeed -= 0.5;
+                    setSpeed(animationSpeed);
+                }
+            });
+            
+            pauseBtn.addEventListener('click', () => {
+                if (isPaused) resumeAnimations();
+                else pauseAnimations();
+            });
+            
+            resetBtn.addEventListener('click', resetAnimations);
+            
+            setSpeed(animationSpeed);
+        });
+    </script>
+</body>
+</html>
+
+

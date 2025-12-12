@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Панель обратной связи</title>
+<style>
+body {
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.feedback-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: box-shadow 0.3s, transform 0.3s;
+    cursor: pointer;
+    text-align: center;
+    font-size: 1.5em;
+    color: #333;
+    justify-content: center;
+}
+
+.count {
+    font-size: 2em;
+    margin-top: 10px;
+}
+
+.active {
+    transform: scale(1.1);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+@media screen and (max-width: 600px) {
+    .zone {width: 150px; height: 150px;}
+    .count {font-size: 1.5em;}
+}
+</style>
+</head>
+<body>
+<div class="feedback-panel">
+    <div class="zone" onclick="incrementCount(0)" id="trash-zone">
+        🗑️ Мусорник
+        <div class="count" id="trash-count">0</div>
+    </div>
+    <div class="zone" onclick="incrementCount(1)" id="suitcase-zone">
+        🧳 Чемодан
+        <div class="count" id="suitcase-count">0</div>
+    </div>
+    <div class="zone" onclick="incrementCount(2)" id="grinder-zone">
+        ⚙️ Мясорубка
+        <div class="count" id="grinder-count">0</div>
+    </div>
+</div>
+
+<script>
+const zones = [
+    { element: document.getElementById("trash-zone"), countEl: document.getElementById("trash-count") },
+    { element: document.getElementById("suitcase-zone"), countEl: document.getElementById("suitcase-count") },
+    { element: document.getElementById("grinder-zone"), countEl: document.getElementById("grinder-count") }
+];
+
+function incrementCount(index) {
+    zones[index].element.classList.add("active");
+    setTimeout(() => zones[index].element.classList.remove("active"), 500);
+    zones[index].countEl.textContent = parseInt(zones[index].countEl.textContent) + 1;
+}
+</script>
+</body>
+</html>
+
+

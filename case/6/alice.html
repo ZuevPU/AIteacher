@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Диаграмма Венна: Онегин и Ленский</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            text-align: center;
+            color: #333;
+        }
+
+        .venn-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 400px;
+            margin: 0 auto 40px;
+        }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.7;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 60px;
+        }
+
+        .circle-left {
+            width: 300px;
+            height: 300px;
+            background-color: #ffcccc;
+            left: 100px;
+            top: 50px;
+        }
+
+        .circle-right {
+            width: 300px;
+            height: 300px;
+            background-color: #ccccff;
+            right: 100px;
+            top: 50px;
+        }
+
+        .intersection {
+            position: absolute;
+            width: 150px;
+            height: 300px;
+            background-color: #ddddcc;
+            border-radius: 0 50% 50% 0;
+            left: calc(50% - 75px);
+            top: 50px;
+            z-index: -1;
+        }
+
+        .labels {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            top: 10px;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 120px;
+            pointer-events: none;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .items-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .item {
+            padding: 12px 16px;
+            border: 2px dashed #666;
+            border-radius: 8px;
+            cursor: grab;
+            user-select: none;
+            transition: all 0.3s ease;
+            background-color: #f9f9f9;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .item:active {
+            cursor: grabbing;
+        }
+
+        .item.correct {
+            border-color: #28a745;
+            background-color: #d4edda;
+            animation: highlight 0.5s ease-in-out;
+        }
+
+        @keyframes highlight {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @media (max-width: 768px) {
+            .venn-container {
+                height: 500px;
+            }
+
+            .circle-left, .circle-right {
+                width: 240px;
+                height: 240px;
+                left: 40px;
+                right: 40px;
+            }
+
+            .intersection {
+                width: 120px;
+                left: calc(50% - 60px);
+            }
+
+            .labels {
+                padding: 0 60px;
+            }
+
+            .items-container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Сравнение персонажей: Онегин и Ленский</h1>
+
+    <div class="venn-container">
+        <div class="intersection"></div>
+        <div class="circle circle-left" id="onegin-zone"></div>
+        <div class="circle circle-right" id="lensky-zone"></div>
+        <div class="labels">
+            <div class="label">Онегин</div>
+            <div class="label">Ленский</div>
+        </div>
+    </div>
+
+    <div class="items-container">
+        <div class="item" draggable="true" data-target="intersection">Образованность</div>
+        <div class="item" draggable="true" data-target="onegin-zone">Скептицизм</div>
+        <div class="item" draggable="true" data-target="lensky-zone">Романтичность</div>
+        <div class="item" draggable="true" data-target="intersection">Молодость</div>
+        <div class="item" draggable="true" data-target="onegin-zone">Цинизм</div>
+        <div class="item" draggable="true" data-target="lensky-zone">Поэтичность</div>
+    </div>
+
+    <script>
+        const items = document.querySelectorAll('.item');
+        const oneginZone = document.getElementById('onegin-zone');
+        const lenskyZone = document.getElementById('lensky-zone');
+        const intersection = document.querySelector('.intersection');
+
+        let draggedItem = null;
+
+        items.forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                draggedItem = item;
+                e.dataTransfer.effectAllowed = 'move';
+            });
+
+            item.addEventListener('dragend', () => {
+                draggedItem = null;
+            });
+        });
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+
+            if (!draggedItem) return;
+
+            const targetZone = e.target.closest('.circle, .intersection');
+            if (!targetZone) return;
+
+            const expectedTarget = draggedItem.getAttribute('data-target');
+            const actualTarget = targetZone.id || 'intersection';
+
+            if (expectedTarget === actualTarget) {
+                draggedItem.classList.add('correct');
+                draggedItem.style.position = 'absolute';
+                draggedItem.style.left = `${e.offsetX - 100}px`;
+                draggedItem.style.top = `${e.offsetY - 20}px`;
+                draggedItem.style.pointerEvents = 'none';
+                draggedItem.setAttribute('draggable', 'false');
+            } else {
+                draggedItem.style.transition = 'all 0.3s ease';
+                setTimeout(() => {
+                    draggedItem.style.removeProperty('position');
+                    draggedItem.style.removeProperty('left');
+                    draggedItem.style.removeProperty('top');
+                    draggedItem.style.removeProperty('transition');
+                    draggedItem.style.removeProperty('pointer-events');
+                }, 300);
+            }
+        }
+
+        oneginZone.addEventListener('dragover', handleDragOver);
+        oneginZone.addEventListener('drop', handleDrop);
+
+        lenskyZone.addEventListener('dragover', handleDragOver);
+        lenskyZone.addEventListener('drop', handleDrop);
+
+        intersection.addEventListener('dragover', handleDragOver);
+        intersection.addEventListener('drop', handleDrop);
+    </script>
+</body>
+</html>
+
+

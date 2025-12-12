@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Аналоговые часы</title>
+<style>
+body {
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.clock {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background-color: #fafafa;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+}
+
+.dial {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background-image: radial-gradient(circle at center, transparent 50%, #ccc 50%), conic-gradient(#ddd 0deg,#aaa 360deg);
+    background-repeat: no-repeat;
+}
+
+.hand {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform-origin: bottom center;
+    background-color: #000;
+    transform-style: preserve-3d;
+}
+
+.hour-hand {
+    width: 6px; height: 50px;
+    transform: rotateZ(270deg);
+}
+
+.minute-hand {
+    width: 4px; height: 80px;
+    transform: rotateZ(264deg);
+}
+
+.second-hand {
+    width: 2px; height: 90px;
+    transform: rotateZ(241deg);
+    animation: secondHandMove 60s infinite steps(60);
+}
+
+.numbers {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+    line-height: 1;
+    text-align: center;
+    color: #000;
+}
+
+.number {
+    position: absolute;
+    width: 100%;
+    text-transform: uppercase;
+}
+
+@keyframes secondHandMove {
+    100% {transform: rotateZ(360deg);}
+}
+
+@media screen and (max-width: 600px) {
+    body {height: auto; padding: 20px;}
+    .clock {width: 150px; height: 150px;}
+    .hand {top: calc(50% - 1px); left: calc(50% - 1px);}
+    .second-hand {height: 70px;}
+    .numbers {font-size: 10px;}
+}
+</style>
+</head>
+<body>
+<div class="clock">
+    <div class="dial"></div>
+    <div class="hand hour-hand"></div>
+    <div class="hand minute-hand"></div>
+    <div class="hand second-hand"></div>
+    <div class="numbers">
+        <span class="number" style="transform:rotate(0deg) translateY(-80px);">12</span>
+        <span class="number" style="transform:rotate(30deg) translateX(70px);">I</span>
+        <span class="number" style="transform:rotate(60deg) translateY(70px);">II</span>
+        <span class="number" style="transform:rotate(90deg) translateX(-70px);">III</span>
+        <span class="number" style="transform:rotate(120deg) translateY(-70px);">IV</span>
+        <span class="number" style="transform:rotate(150deg) translateX(-70px);">V</span>
+        <span class="number" style="transform:rotate(180deg) translateY(80px);">VI</span>
+        <span class="number" style="transform:rotate(210deg) translateX(70px);">VII</span>
+        <span class="number" style="transform:rotate(240deg) translateY(-70px);">VIII</span>
+        <span class="number" style="transform:rotate(270deg) translateX(-70px);">IX</span>
+        <span class="number" style="transform:rotate(300deg) translateY(70px);">X</span>
+        <span class="number" style="transform:rotate(330deg) translateX(-70px);">XI</span>
+    </div>
+</div>
+</body>
+</html>
+
+

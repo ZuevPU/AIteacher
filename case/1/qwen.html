@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Тест: Атомный номер 6</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 30px;
+      text-align: center;
+      max-width: 600px;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .card {
+      background-color: #f9f9f9;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1.2rem;
+      font-weight: bold;
+      user-select: none;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .card:hover {
+      background-color: #e9e9e9;
+      transform: translateY(-4px);
+    }
+
+    .card.correct {
+      background-color: #4CAF50;
+      color: white;
+      border-color: #388E3C;
+      transform: scale(1.05);
+      animation: pulse 0.6s ease-in-out;
+    }
+
+    .card.incorrect {
+      background-color: #F44336;
+      color: white;
+      border-color: #D32F2F;
+      animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); }
+      20%, 40%, 60%, 80% { transform: translateX(6px); }
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+      70% { box-shadow: 0 0 0 15px rgba(76, 175, 80, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+    }
+
+    #firework {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0;
+    }
+
+    .particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: #FFD700;
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Какой элемент таблицы Менделеева имеет атомный номер 6?</h1>
+  <div class="options">
+    <div class="card" data-answer="O">А) Кислород</div>
+    <div class="card" data-answer="C">Б) Углерод</div>
+    <div class="card" data-answer="N">В) Азот</div>
+    <div class="card" data-answer="Au">Г) Золото</div>
+  </div>
+  <div id="firework"></div>
+
+  <script>
+    const cards = document.querySelectorAll('.card');
+    const fireworkContainer = document.getElementById('firework');
+
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        if (document.querySelector('.card.correct') || document.querySelector('.card.incorrect')) return;
+
+        const isCorrect = card.dataset.answer === 'C';
+
+        if (isCorrect) {
+          card.classList.add('correct');
+          createFirework();
+        } else {
+          card.classList.add('incorrect');
+        }
+      });
+    });
+
+    function createFirework() {
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      const colors = ['#FF5252', '#FFD740', '#40C4FF', '#69F0AE', '#FF4081'];
+
+      fireworkContainer.style.opacity = '1';
+
+      for (let i = 0; i < 100; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        fireworkContainer.appendChild(particle);
+
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 2 + Math.random() * 3;
+        const vx = Math.cos(angle) * speed;
+        const vy = Math.sin(angle) * speed;
+
+        let x = centerX;
+        let y = centerY;
+        let opacity = 1;
+        let size = 4 + Math.random() * 4;
+
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+
+        const animate = () => {
+          x += vx;
+          y += vy;
+          vy += 0.05; // gravity
+          opacity -= 0.015;
+          particle.style.opacity = opacity;
+          particle.style.left = `${x}px`;
+          particle.style.top = `${y}px`;
+
+          if (opacity > 0) {
+            requestAnimationFrame(animate);
+          } else {
+            particle.remove();
+          }
+        };
+
+        setTimeout(() => {
+          particle.style.opacity = '1';
+          requestAnimationFrame(animate);
+        }, 10);
+      }
+
+      setTimeout(() => {
+        fireworkContainer.style.opacity = '0';
+        fireworkContainer.innerHTML = '';
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
+
+

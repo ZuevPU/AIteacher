@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Интерактивная Модель Животной Клетки</title>
+<style>
+body {
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.cell-container {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background-color: #cceeff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.organelles {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.organelles li {
+    position: absolute;
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    background-color: #ffcc99;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.organelles li::before {
+    content: attr(data-label);
+    position: absolute;
+    top: -30px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: #000;
+    text-align: center;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0.3s, opacity 0.3s;
+}
+
+.organelles li:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.organelles li:hover::before {
+    visibility: visible;
+    opacity: 1;
+}
+
+#nucleus {
+    background-color: #ffcccc;
+    top: 0; left: 0;
+}
+
+#mitochondria {
+    background-color: #ccffcc;
+    right: 0; bottom: 0;
+}
+
+#endoplasmic-network {
+    background-color: #ffffcc;
+    top: 0; right: 0;
+}
+
+#cytoplasm {
+    background-color: #ccffee;
+    bottom: 0; left: 0;
+}
+
+@media screen and (max-width: 600px) {
+    .cell-container {width: 200px; height: 200px;}
+    .organelles li {width: 30px; height: 30px;}
+    .organelles li::before {font-size: 10px;}
+}
+</style>
+</head>
+<body>
+<div class="cell-container">
+    <ul class="organelles">
+        <li id="nucleus" data-label="Ядро: Контроль генетической информацией"></li>
+        <li id="mitochondria" data-label="Митохондрии: Энергетическая станция клетки"></li>
+        <li id="endoplasmic-network" data-label="Эндоплазматическая сеть: Производство белков"></li>
+        <li id="cytoplasm" data-label="Цитоплазма: Заполнение пространства внутри клетки"></li>
+    </ul>
+</div>
+</body>
+</html>
+
+

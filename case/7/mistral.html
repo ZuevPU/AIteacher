@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Анкета-опросник</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            color: #333;
+        }
+
+        .questionnaire-container {
+            width: 100%;
+            max-width: 600px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .question {
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .likert-scale {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            position: relative;
+        }
+
+        .likert-option {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 5px;
+            margin: 0 2px;
+            background-color: #e0e0e0;
+        }
+
+        .likert-option:hover {
+            background-color: #b0bec5;
+        }
+
+        .likert-option.selected {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .likert-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .likert-labels span {
+            flex: 1;
+            text-align: center;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #results {
+            display: none;
+            margin-top: 30px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .radar-chart {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+        }
+
+        .radar-area {
+            fill: rgba(76, 175, 80, 0.4);
+            stroke: #4caf50;
+            stroke-width: 2;
+        }
+
+        .radar-axis {
+            stroke: #999;
+            stroke-width: 1;
+        }
+
+        .radar-label {
+            font-size: 0.8rem;
+            fill: #333;
+            text-anchor: middle;
+        }
+
+        .question-hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="questionnaire-container">
+        <h2 style="text-align: center; margin-bottom: 20px;">Опросник</h2>
+
+        <div class="question" id="question1">
+            Чувствую ли я себя в безопасности в классе?
+            <div class="likert-scale" data-question="1">
+                <div class="likert-option" data-value="1">1</div>
+                <div class="likert-option" data-value="2">2</div>
+                <div class="likert-option" data-value="3">3</div>
+                <div class="likert-option" data-value="4">4</div>
+                <div class="likert-option" data-value="5">5</div>
+            </div>
+            <div class="likert-labels">
+                <span>Полностью не согласен</span>
+                <span></span>
+                <span>Нейтрально</span>
+                <span></span>
+                <span>Полностью согласен</span>
+            </div>
+        </div>
+
+        <div class="question" id="question2">
+            Интересно ли мне учиться?
+            <div class="likert-scale" data-question="2">
+                <div class="likert-option" data-value="1">1</div>
+                <div class="likert-option" data-value="2">2</div>
+                <div class="likert-option" data-value="3">3</div>
+                <div class="likert-option" data-value="4">4</div>
+                <div class="likert-option" data-value="5">5</div>
+            </div>
+            <div class="likert-labels">
+                <span>Полностью не согласен</span>
+                <span></span>
+                <span>Нейтрально</span>
+                <span></span>
+                <span>Полностью согласен</span>
+            </div>
+        </div>
+
+        <div class="question" id="question3">
+            Уверен ли я в своих силах?
+            <div class="likert-scale" data-question="3">
+                <div class="likert-option" data-value="1">1</div>
+                <div class="likert-option" data-value="2">2</div>
+                <div class="likert-option" data-value="3">3</div>
+                <div class="likert-option" data-value="4">4</div>
+                <div class="likert-option" data-value="5">5</div>
+            </div>
+            <div class="likert-labels">
+                <span>Полностью не согласен</span>
+                <span></span>
+                <span>Нейтрально</span>
+                <span></span>
+                <span>Полностью согласен</span>
+            </div>
+        </div>
+
+        <div class="question" id="question4">
+            Легко ли мне общаться с одноклассниками?
+            <div class="likert-scale" data-question="4">
+                <div class="likert-option" data-value="1">1</div>
+                <div class="likert-option" data-value="2">2</div>
+                <div class="likert-option" data-value="3">3</div>
+                <div class="likert-option" data-value="4">4</div>
+                <div class="likert-option" data-value="5">5</div>
+            </div>
+            <div class="likert-labels">
+                <span>Полностью не согласен</span>
+                <span></span>
+                <span>Нейтрально</span>
+                <span></span>
+                <span>Полностью согласен</span>
+            </div>
+        </div>
+
+        <div class="question" id="question5">
+            Нравится ли мне атмосфера в школе?
+            <div class="likert-scale" data-question="5">
+                <div class="likert-option" data-value="1">1</div>
+                <div class="likert-option" data-value="2">2</div>
+                <div class="likert-option" data-value="3">3</div>
+                <div class="likert-option" data-value="4">4</div>
+                <div class="likert-option" data-value="5">5</div>
+            </div>
+            <div class="likert-labels">
+                <span>Полностью не согласен</span>
+                <span></span>
+                <span>Нейтрально</span>
+                <span></span>
+                <span>Полностью согласен</span>
+            </div>
+        </div>
+
+        <button id="submit-btn">Завершить опрос</button>
+
+        <div id="results">
+            <h3 style="text-align: center;">Ваши результаты</h3>
+            <svg class="radar-chart" viewBox="0 0 300 300">
+                <polygon class="radar-area" points="150,10 250,110 270,200 200,270 100,280 30,200 70,110" fill="rgba(76, 175, 80, 0.4)" stroke="#4caf50" stroke-width="2"></polygon>
+                <line class="radar-axis" x1="150" y1="10" x2="250" y2="110"></line>
+                <line class="radar-axis" x1="250" y1="110" x2="270" y2="200"></line>
+                <line class="radar-axis" x1="270" y1="200" x2="200" y2="270"></line>
+                <line class="radar-axis" x1="200" y1="270" x2="100" y2="280"></line>
+                <line class="radar-axis" x1="100" y1="280" x2="30" y2="200"></line>
+                <line class="radar-axis" x1="30" y1="200" x2="70" y2="110"></line>
+                <line class="radar-axis" x1="70" y1="110" x2="150" y2="10"></line>
+                <text class="radar-label" x="260" y="120">Безопасность</text>
+                <text class="radar-label" x="280" y="210">Интерес</text>
+                <text class="radar-label" x="210" y="290">Уверенность</text>
+                <text class="radar-label" x="90" y="290">Общение</text>
+                <text class="radar-label" x="20" y="210">Атмосфера</text>
+            </svg>
+        </div>
+    </div>
+
+    <script>
+        const likertScales = document.querySelectorAll('.likert-scale');
+        const submitBtn = document.getElementById('submit-btn');
+        const resultsDiv = document.getElementById('results');
+        const questions = document.querySelectorAll('.question');
+
+        let answers = {};
+
+        likertScales.forEach(scale => {
+            const options = scale.querySelectorAll('.likert-option');
+            options.forEach(option => {
+                option.addEventListener('click', () => {
+                    options.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    const questionId = scale.getAttribute('data-question');
+                    const value = option.getAttribute('data-value');
+                    answers[questionId] = parseInt(value);
+                });
+            });
+        });
+
+        submitBtn.addEventListener('click', () => {
+            if (Object.keys(answers).length === 5) {
+                questions.forEach(question => {
+                    question.classList.add('question-hidden');
+                });
+                submitBtn.style.display = 'none';
+                resultsDiv.style.display = 'block';
+            } else {
+                alert('Пожалуйста, ответьте на все вопросы.');
+            }
+        });
+    </script>
+</body>
+</html>
+
+

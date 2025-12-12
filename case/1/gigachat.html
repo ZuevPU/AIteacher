@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Тест по таблице Менделеева</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    text-align: center;
+}
+
+.question {
+    margin-bottom: 2rem;
+    font-size: 1.5em;
+}
+
+.card-container {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    justify-items: center;
+}
+
+.card {
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,.1);
+    transition: all .3s ease-in-out;
+    cursor: pointer;
+    width: 150px;
+    text-align: center;
+    color: black;
+    background-color: white;
+}
+
+.card.correct {
+    animation: glow-green 1s forwards;
+}
+
+@keyframes glow-green {
+    to {box-shadow: 0 0 20px green;}
+}
+
+.card.incorrect {
+    animation: shake-red 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+@keyframes shake-red {
+    10%, 90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+    
+    20%, 80% {
+        transform: translate3d(2px, 0, 0);
+    }
+    
+    30%, 50%, 70% {
+        transform: translate3d(-2px, 0, 0);
+    }
+    
+    40%, 60% {
+        transform: translate3d(2px, 0, 0);
+    }
+    
+    from,
+    to {
+        color: red;
+        box-shadow: 0 0 10px red;
+    }
+}
+
+.fireworks {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+    z-index: 100;
+    will-change: transform, opacity;
+    animation: firework-explosion 1s linear forwards;
+}
+
+@keyframes firework-explosion {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+.hidden {
+    display: none !important;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="question">Какой элемент таблицы Менделеева имеет атомный номер 6?</div>
+    <div class="card-container">
+        <div id="A" class="card">А) Кислород</div>
+        <div id="B" class="card correct">Б) Углерод</div>
+        <div id="C" class="card">В) Азот</div>
+        <div id="D" class="card">Г) Золото</div>
+    </div>
+    <canvas class="fireworks hidden"></canvas>
+</div>
+<script>
+document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('click', () => {
+        if (card.classList.contains('correct')) {
+            document.querySelector('#B').classList.add('correct');
+            const canvas = document.querySelector('.fireworks');
+            canvas.width = window.innerWidth * 2;
+            canvas.height = window.innerHeight * 2;
+            const ctx = canvas.getContext('2d');
+            
+            // Фейерверк!
+            function drawFirework() {
+                for(let i = 0; i < 100; i++) {
+                    let x = Math.random() * canvas.width;
+                    let y = Math.random() * canvas.height;
+                    ctx.beginPath();
+                    ctx.fillStyle = `rgba(${Math.floor(Math.random()*256)}, ${Math.floor(Math.random()*256)}, ${Math.floor(Math.random()*256)}, 0.5)`;
+                    ctx.arc(x, y, 5, 0, Math.PI*2);
+                    ctx.fill();
+                }
+            }
+        
+            setTimeout(() => {
+                drawFirework();
+                canvas.classList.remove('hidden');
+            }, 50); // задержка перед отображением фейерверков
+
+            setTimeout(() => {
+                canvas.classList.add('hidden'); // скрываем спустя секунду
+            }, 1000);
+        } else {
+            card.classList.add('incorrect');
+        }
+    });
+});
+</script>
+</body>
+</html>
+
+

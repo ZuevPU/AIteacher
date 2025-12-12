@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Исторический платформер</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: white;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .question {
+            font-size: 1.4rem;
+            color: #ecf0f1;
+            font-weight: bold;
+        }
+        
+        .game-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background-color: #ecf0f1;
+        }
+        
+        #gameCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .controls {
+            background-color: #34495e;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .controls-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .key {
+            display: inline-block;
+            background-color: #2c3e50;
+            padding: 5px 15px;
+            border-radius: 5px;
+            margin: 0 5px;
+            font-weight: bold;
+        }
+        
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+            z-index: 1000;
+            width: 90%;
+            max-width: 500px;
+        }
+        
+        .game-over h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #e74c3c;
+        }
+        
+        .game-over p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+        }
+        
+        .restart-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .restart-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .success {
+            background-color: rgba(46, 204, 113, 0.9) !important;
+            color: #2c3e50;
+        }
+        
+        .success h2 {
+            color: #27ae60;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.4rem;
+            }
+            
+            .question {
+                font-size: 1.1rem;
+            }
+            
+            .controls {
+                font-size: 0.9rem;
+                padding: 10px;
+            }
+            
+            .controls-info {
+                gap: 15px;
+            }
+            
+            .key {
+                padding: 4px 10px;
+            }
+            
+            .game-over {
+                padding: 20px;
+            }
+            
+            .game-over h2 {
+                font-size: 1.8rem;
+            }
+            
+            .game-over p {
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.2rem;
+            }
+            
+            .question {
+                font-size: 1rem;
+            }
+            
+            .controls {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Исторический платформер</h1>
+        <div class="question">В каком году закончилась Великая Отечественная война?</div>
+    </div>
+    
+    <div class="game-container">
+        <canvas id="gameCanvas"></canvas>
+        
+        <div class="game-over" id="gameOverScreen">
+            <h2>Игра окончена!</h2>
+            <p id="gameResultText">Вы выбрали неверную дату!</p>
+            <button class="restart-btn" id="restartBtn">Играть снова</button>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <div>Управление персонажем:</div>
+        <div class="controls-info">
+            <div>Влево: <span class="key">←</span> или <span class="key">A</span></div>
+            <div>Вправо: <span class="key">→</span> или <span class="key">D</span></div>
+            <div>Прыжок: <span class="key">ПРОБЕЛ</span> или <span class="key">↑</span> или <span class="key">W</span></div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const gameResultText = document.getElementById('gameResultText');
+        const restartBtn = document.getElementById('restartBtn');
+        
+        // Размеры canvas
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+        
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Игровые переменные
+        let gameActive = true;
+        const correctAnswer = 1945;
+        
+        // Персонаж
+        const player = {
+            x: canvas.width / 2 - 15,
+            y: canvas.height - 100,
+            width: 30,
+            height: 40,
+            velocityX: 0,
+            velocityY: 0,
+            speed: 5,
+            jumpPower: 15,
+            isJumping: false,
+            color: '#3498db',
+            
+            draw() {
+                // Тело студента
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                
+                // Голова
+                ctx.fillStyle = '#f1c40f';
+                ctx.beginPath();
+                ctx.arc(this.x + this.width/2, this.y - 10, 15, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Рюкзак
+                ctx.fillStyle = '#e74c3c';
+                ctx.fillRect(this.x - 10, this.y + 5, 10, 25);
+                
+                // Глаза
+                ctx.fillStyle = 'white';
+                ctx.beginPath();
+                ctx.arc(this.x + this.width/2 - 5, this.y - 12, 3, 0, Math.PI * 2);
+                ctx.arc(this.x + this.width/2 + 5, this.y - 12, 3, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = 'black';
+                ctx.beginPath();
+                ctx.arc(this.x + this.width/2 - 5, this.y - 12, 1.5, 0, Math.PI * 2);
+                ctx.arc(this.x + this.width/2 + 5, this.y - 12, 1.5, 0, Math.PI * 2);
+                ctx.fill();
+            },
+            
+            update() {
+                // Применяем гравитацию
+                this.velocityY += 0.8;
+                
+                // Обновляем позицию
+                this.x += this.velocityX;
+                this.y += this.velocityY;
+                
+                // Ограничиваем движение по горизонтали
+                if (this.x < 0) this.x = 0;
+                if (this.x + this.width > canvas.width) this.x = canvas.width - this.width;
+                
+                // Если упали ниже экрана
+                if (this.y > canvas.height) {
+                    gameOver(false);
+                }
+            },
+            
+            jump() {
+                if (!this.isJumping) {
+                    this.velocityY = -this.jumpPower;
+                    this.isJumping = true;
+                }
+            },
+            
+            reset() {
+                this.x = canvas.width / 2 - 15;
+                this.y = canvas.height - 100;
+                this.velocityX = 0;
+                this.velocityY = 0;
+                this.isJumping = false;
+            }
+        };
+        
+        // Платформы
+        const platforms = [
+            { x: 100, y: canvas.height - 150, width: 120, height: 20, year: 1941, color: '#95a5a6' },
+            { x: canvas.width - 220, y: canvas.height - 250, width: 120, height: 20, year: 1945, color: '#95a5a6' },
+            { x: 200, y: canvas.height - 350, width: 120, height: 20, year: 1949, color: '#95a5a6' },
+            { x: canvas.width - 320, y: canvas.height - 450, width: 120, height: 20, year: 1945, color: '#95a5a6' },
+            { x: 150, y: canvas.height - 550, width: 120, height: 20, year: 1941, color: '#95a5a6' },
+            { x: canvas.width - 150, y: canvas.height - 650, width: 120, height: 20, year: 1945, color: '#95a5a6' }
+        ];
+        
+        function drawPlatforms() {
+            platforms.forEach(platform => {
+                // Платформа
+                ctx.fillStyle = platform.color;
+                ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+                
+                // Тень под платформой
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+                ctx.fillRect(platform.x, platform.y + platform.height, platform.width, 3);
+                
+                // Текст с годом
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 20px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(platform.year, platform.x + platform.width/2, platform.y + platform.height/2);
+            });
+        }
+        
+        // Проверка коллизий
+        function checkCollisions() {
+            let onPlatform = false;
+            
+            platforms.forEach(platform => {
+                // Проверяем, находится ли игрок над платформой и падает ли вниз
+                if (player.x < platform.x + platform.width &&
+                    player.x + player.width > platform.x &&
+                    player.y + player.height > platform.y &&
+                    player.y + player.height < platform.y + platform.height + 10 &&
+                    player.velocityY > 0) {
+                    
+                    // Если это правильный ответ
+                    if (platform.year === correctAnswer) {
+                        player.y = platform.y - player.height;
+                        player.velocityY = 0;
+                        player.isJumping = false;
+                        onPlatform = true;
+                        
+                        // Подсвечиваем правильную платформу
+                        platform.color = '#2ecc71';
+                        
+                        // Если достигли верхней платформы
+                        if (platform.y < 100) {
+                            gameOver(true);
+                        }
+                    } else {
+                        // Неправильная платформа - падаем
+                        gameOver(false);
+                    }
+                }
+            });
+            
+            // Если не на платформе, то в прыжке
+            if (!onPlatform && player.velocityY === 0) {
+                player.isJumping = true;
+            }
+        }
+        
+        // Управление
+        const keys = {};
+        
+        window.addEventListener('keydown', (e) => {
+            keys[e.key.toLowerCase()] = true;
+            
+            if (e.code === 'Space' && gameActive) {
+                player.jump();
+                e.preventDefault();
+            }
+        });
+        
+        window.addEventListener('keyup', (e) => {
+            keys[e.key.toLowerCase()] = false;
+        });
+        
+        function handleInput() {
+            player.velocityX = 0;
+            
+            if (keys['arrowleft'] || keys['a']) {
+                player.velocityX = -player.speed;
+            }
+            if (keys['arrowright'] || keys['d']) {
+                player.velocityX = player.speed;
+            }
+            if (keys['arrowup'] || keys['w']) {
+                player.jump();
+            }
+        }
+        
+        // Игровой цикл
+        function gameLoop() {
+            // Очищаем canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (gameActive) {
+                handleInput();
+                player.update();
+                checkCollisions();
+            }
+            
+            drawPlatforms();
+            player.draw();
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Конец игры
+        function gameOver(isSuccess) {
+            gameActive = false;
+            
+            if (isSuccess) {
+                gameResultText.textContent = 'Поздравляем! Вы выбрали правильный год - 1945!';
+                gameOverScreen.classList.add('success');
+            } else {
+                gameResultText.textContent = 'Неверно! Великая Отечественная война закончилась в 1945 году.';
+                gameOverScreen.classList.remove('success');
+            }
+            
+            gameOverScreen.style.display = 'block';
+        }
+        
+        // Перезапуск игры
+        restartBtn.addEventListener('click', () => {
+            gameActive = true;
+            player.reset();
+            
+            // Сбрасываем цвета платформ
+            platforms.forEach(platform => {
+                platform.color = '#95a5a6';
+            });
+            
+            gameOverScreen.style.display = 'none';
+        });
+        
+        // Запускаем игру
+        gameLoop();
+        
+        // Адаптация платформ при изменении размера
+        window.addEventListener('resize', () => {
+            // Обновляем позиции платформ при изменении размера окна
+            const oldWidth = canvas.width;
+            const oldHeight = canvas.height;
+            
+            resizeCanvas();
+            
+            // Масштабируем позиции платформ
+            const widthRatio = canvas.width / oldWidth;
+            const heightRatio = canvas.height / oldHeight;
+            
+            platforms.forEach(platform => {
+                platform.x *= widthRatio;
+                platform.y *= heightRatio;
+                platform.width *= widthRatio;
+            });
+            
+            // Корректируем позицию игрока
+            player.x *= widthRatio;
+            player.y *= heightRatio;
+        });
+    </script>
+</body>
+</html>
+
+

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Диаграмма Венна для Сравнения Персонажей</title>
+<style>
+body {
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.diagram {
+    position: relative;
+    width: 400px;
+    height: 300px;
+}
+
+.circle {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background-color: #ffaacc;
+    opacity: 0.8;
+}
+
+.left-circle {
+    left: 0; top: 50px;
+}
+
+.right-circle {
+    right: 0; top: 50px;
+}
+
+.intersection {
+    position: absolute;
+    top: 50px; left: 100px;
+    width: 100px; height: 200px;
+    background-color: #aaffaa;
+    opacity: 0.8;
+}
+
+.draggable-block {
+    position: absolute;
+    width: 100px; height: 50px;
+    background-color: #ffccbb;
+    border-radius: 10px;
+    font-size: 14px;
+    text-align: center;
+    line-height: 50px;
+    cursor: move;
+    user-select: none;
+    transition: background-color 0.3s;
+}
+
+.draggable-block.correct {
+    background-color: #aaffaa;
+}
+
+@media screen and (max-width: 600px) {
+    .diagram {width: 300px; height: 200px;}
+    .circle {width: 150px; height: 150px;}
+    .intersection {width: 75px; height: 150px;}
+    .draggable-block {width: 75px; height: 35px; font-size: 12px; line-height: 35px;}
+}
+</style>
+</head>
+<body>
+<div class="diagram">
+    <div class="circle left-circle"></div>
+    <div class="circle right-circle"></div>
+    <div class="intersection"></div>
+    <div id="block1" class="draggable-block" draggable="true">Общие черты</div>
+    <div id="block2" class="draggable-block" draggable="true">Черты Онегина</div>
+    <div id="block3" class="draggable-block" draggable="true">Черты Ленского</div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const blocks = document.querySelectorAll(".draggable-block");
+    const intersection = document.querySelector(".intersection");
+    const circles = document.querySelectorAll(".circle");
+
+    blocks.forEach(block => {
+        block.addEventListener("dragstart", handleDragStart);
+        block.addEventListener("dragover", handleDragOver);
+        block.addEventListener("drop", handleDrop);
+        block.addEventListener("dragenter", handleDragEnter);
+        block.addEventListener("dragleave", handleDragLeave);
+        block.addEventListener("dragend", handleDragEnd);
+    });
+
+    function handleDragStart(e) {
+        e.dataTransfer.setData("text/plain", e.target.id);
+    }
+
+    function handleDragOver(e) {
+        e.preventDefault();
+    }
+
+    function handleDragEnter(e) {
+        e.target.style.border = "2px dotted blue";
+    }
+
+    function handleDragLeave(e) {
+        e.target.style.border = "";
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        const targetBlock = e.target.closest(".draggable-block");
+        const sourceBlockId = e.dataTransfer.getData("text/plain");
+        const sourceBlock = document.getElementById(sourceBlockId);
+
+        if ((targetBlock && targetBlock.id === "block1") ||
+            (sourceBlock.id === "block1" && intersection.contains(targetBlock)) ||
+            (Array.from(circles).some(circle => circle.contains(targetBlock))) ||
+            (intersection.contains(targetBlock))
+        ) {
+            sourceBlock.classList.add("correct");
+        }
+    }
+
+    function handleDragEnd(e) {
+        e.target.style.border = "";
+    }
+});
+</script>
+</body>
+</html>
+
+

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аналоговые часы</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+
+        .clock {
+            width: 300px;
+            height: 300px;
+            border: 10px solid #333;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .clock::before {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: #333;
+            border-radius: 50%;
+            z-index: 10;
+        }
+
+        .dial {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .number {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            font-size: 16px;
+            color: #333;
+            transform-origin: 50% 150px;
+        }
+
+        .number:nth-child(1) { transform: rotate(30deg); }
+        .number:nth-child(2) { transform: rotate(60deg); }
+        .number:nth-child(3) { transform: rotate(90deg); }
+        .number:nth-child(4) { transform: rotate(120deg); }
+        .number:nth-child(5) { transform: rotate(150deg); }
+        .number:nth-child(6) { transform: rotate(180deg); }
+        .number:nth-child(7) { transform: rotate(210deg); }
+        .number:nth-child(8) { transform: rotate(240deg); }
+        .number:nth-child(9) { transform: rotate(270deg); }
+        .number:nth-child(10) { transform: rotate(300deg); }
+        .number:nth-child(11) { transform: rotate(330deg); }
+        .number:nth-child(12) { transform: rotate(0deg); }
+
+        .hand {
+            position: absolute;
+            left: 50%;
+            bottom: 50%;
+            background-color: #333;
+            border-radius: 4px;
+            transform-origin: 50% 100%;
+            transform: translateX(-50%);
+        }
+
+        .second-hand {
+            width: 1px;
+            height: 130px;
+            animation: tick-tock 60s steps(60) infinite;
+            background-color: red;
+        }
+
+        .minute-hand {
+            width: 4px;
+            height: 110px;
+            transform: rotate(144deg); /* 24 минуты */
+        }
+
+        .hour-hand {
+            width: 6px;
+            height: 80px;
+            transform: rotate(282deg); /* 9 часов 24 минуты */
+        }
+
+        @keyframes tick-tock {
+            0% { transform: translateX(-50%) rotate(6deg); }
+            100% { transform: translateX(-50%) rotate(366deg); }
+        }
+
+        @media (max-width: 480px) {
+            .clock {
+                width: 240px;
+                height: 240px;
+            }
+
+            .number {
+                font-size: 14px;
+            }
+
+            .hand {
+                transform-origin: 50% 95%;
+            }
+
+            .second-hand { height: 104px; }
+            .minute-hand { height: 88px; }
+            .hour-hand { height: 64px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="clock">
+        <div class="dial">
+            <div class="number">I</div>
+            <div class="number">II</div>
+            <div class="number">III</div>
+            <div class="number">IV</div>
+            <div class="number">V</div>
+            <div class="number">VI</div>
+            <div class="number">VII</div>
+            <div class="number">VIII</div>
+            <div class="number">IX</div>
+            <div class="number">X</div>
+            <div class="number">XI</div>
+            <div class="number">XII</div>
+            <div class="hand second-hand"></div>
+            <div class="hand minute-hand"></div>
+            <div class="hand hour-hand"></div>
+        </div>
+    </div>
+</body>
+</html>
+
+

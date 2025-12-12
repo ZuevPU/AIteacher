@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Планетарная модель атома</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+
+        .atom-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 600px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nucleus {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(#ff6b3b, #e74c3c);
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.6);
+            z-index: 10;
+        }
+
+        .orbit {
+            position: absolute;
+            border: 1px dashed rgba(0, 0, 0, 0.2);
+            border-radius: 50%;
+            animation: rotate 8s linear infinite;
+        }
+
+        .orbit-1 {
+            width: 200px;
+            height: 200px;
+            animation-duration: 6s;
+        }
+
+        .orbit-2 {
+            width: 300px;
+            height: 300px;
+            animation-duration: 9s;
+        }
+
+        .orbit-3 {
+            width: 400px;
+            height: 400px;
+            animation-duration: 12s;
+        }
+
+        .electron {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background-color: #3498db;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #3498db;
+        }
+
+        .electron-1 {
+            top: 50%;
+            left: 0;
+            transform: translate(-50%, -50%);
+            animation: orbit-move 6s linear infinite;
+        }
+
+        .electron-2 {
+            top: 50%;
+            left: 0;
+            transform: translate(-50%, -50%);
+            animation: orbit-move 9s linear infinite;
+        }
+
+        .electron-3 {
+            top: 50%;
+            left: 0;
+            transform: translate(-50%, -50%);
+            animation: orbit-move 12s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes orbit-move {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg) translateX(100px) rotate(0deg);
+            }
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg) translateX(100px) rotate(-360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .atom-container {
+                height: 500px;
+            }
+
+            .nucleus {
+                width: 60px;
+                height: 60px;
+            }
+
+            .orbit-1 { width: 150px; height: 150px; }
+            .orbit-2 { width: 225px; height: 225px; }
+            .orbit-3 { width: 300px; height: 300px; }
+
+            .electron {
+                width: 12px;
+                height: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .atom-container {
+                height: 400px;
+            }
+
+            .nucleus {
+                width: 50px;
+                height: 50px;
+            }
+
+            .orbit-1 { width: 120px; height: 120px; }
+            .orbit-2 { width: 180px; height: 180px; }
+            .orbit-3 { width: 240px; height: 240px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="atom-container">
+        <div class="nucleus"></div>
+        <div class="orbit orbit-1">
+            <div class="electron electron-1"></div>
+        </div>
+        <div class="orbit orbit-2">
+            <div class="electron electron-2"></div>
+        </div>
+        <div class="orbit orbit-3">
+            <div class="electron electron-3"></div>
+        </div>
+    </div>
+
+    <script>
+        // Дополнительные манипуляции с анимацией можно добавить здесь
+        // Например, динамическое изменение скорости или направления
+    </script>
+</body>
+</html>
+
+

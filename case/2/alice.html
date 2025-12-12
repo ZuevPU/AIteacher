@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Исторический платформер</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 600px;
+            border: 2px solid #333;
+            overflow: hidden;
+            background-color: #f0f8ff;
+        }
+
+        #question {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            color: #333;
+            max-width: 800px;
+        }
+
+        .platform {
+            position: absolute;
+            width: 120px;
+            height: 20px;
+            background-color: #87ceeb;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .correct {
+            background-color: #28a745 !important;
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .player {
+            position: absolute;
+            width: 30px;
+            height: 40px;
+            background-color: #ff6347;
+            border-radius: 4px;
+            z-index: 10;
+        }
+
+        .student-icon {
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23fff"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 9.75 7 9.75s7-4.5 7-9.75c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/><path d="M12 15c-2.76 0-5 2.24-5 5v1h10v-1c0-2.76-2.24-5-5-5z"/></svg>');
+            background-size: cover;
+        }
+
+        @media (max-width: 600px) {
+            #game-container {
+                height: 480px;
+            }
+            
+            #question {
+                font-size: 1rem;
+                padding: 0 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="question">В каком году закончилась Великая Отечественная война?</div>
+    <div id="game-container">
+        <div class="player">
+            <div class="student-icon"></div>
+        </div>
+    </div>
+
+    <script>
+        const gameContainer = document.getElementById('game-container');
+        const player = document.querySelector('.player');
+        
+        // Параметры игрока
+        let playerX = 100;
+        let playerY = 500;
+        let velocityY = 0;
+        let isJumping = false;
+        const gravity = 0.5;
+        const jumpForce = -12;
+        
+        // Платформы с датами
+        const platforms = [
+            { x: 50, y: 450, date: 1941, correct: false },
+            { x: 300, y: 350, date: 1945, correct: true },
+            { x: 150, y: 250, date: 1949, correct: false }
+        ];
+        
+        // Создаем платформы
+        platforms.forEach((platform, index) => {
+            const platformElement = document.createElement('div');
+            platformElement.className = 'platform';
+            platformElement.id = `platform-${index}`;
+            platformElement.style.left = `${platform.x}px`;
+            platformElement.style.top = `${platform.y}px`;
+            platformElement.textContent = platform.date;
+            gameContainer.appendChild(platformElement);
+        });
+        
+        // Позиция игрока
+        function updatePlayerPosition() {
+            player.style.left = `${playerX}px`;
+            player.style.top = `${playerY}px`;
+        }
+        
+        // Проверка столкновений с платформами
+        function checkCollisions() {
+            for (const platform of platforms) {
+                const platformElement = document.getElementById(`platform-${platforms.indexOf(platform)}`);
+                
+                if (
+                    playerX + 30 > platform.x &&
+                    playerX < platform.x + 120 &&
+                    playerY + 40 >= platform.y &&
+                    playerY + 40 <= platform.y + 10
+                ) {
+                    playerY = platform.y - 40;
+                    velocityY = 0;
+                    isJumping = false;
+                    
+                    // Проверяем правильность даты
+                    if (platform.correct) {
+                        platformElement.classList.add('correct');
+                        alert('Правильно! Великая Отечественная война закончилась в 1945 году.');
+                    } else {
+                        // Падение при неверном ответе
+                        isJumping = true;
+                        velocityY = 5;
+                    }
+                    return;
+                }
+            }
+        }
+        
+        // Игровой цикл
+        function gameLoop() {
+            // Применяем гравитацию
+            if (!isJumping) {
+                velocityY += gravity;
+            }
+            playerY += velocityY;
+            
+            // Ограничиваем падение
+            if (playerY > 560) {
+                playerY = 560;
+                velocityY = 0;
+                isJumping = false;
+            }
+            
+            checkCollisions();
+            updatePlayerPosition();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Управление
+        function jump() {
+            if (!isJumping) {
+                velocityY = jumpForce;
+                isJumping = true;
+            }
+        }
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' || e.code === 'ArrowUp') {
+                jump();
+            }
+        });
+        
+        // Начальное положение игрока
+        updatePlayerPosition();
+        
+        // Запуск игры
+        gameLoop();
+    </script>
+</body>
+</html>
+
+

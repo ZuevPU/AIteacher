@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Анкета-опросник</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+        }
+
+        .question {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .question p {
+            color: #444;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .likert-scale {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            gap: 6px;
+        }
+
+        .option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            width: 16%;
+            user-select: none;
+        }
+
+        .option:hover {
+            transform: translateY(-3px);
+        }
+
+        .circle {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            background-color: white;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .option.selected .circle {
+            border-color: #4CAF50;
+            background-color: #4CAF50;
+            color: #fff;
+            animation: pulse 0.4s ease-in-out;
+        }
+
+        .option.selected .label {
+            color: #4CAF50;
+            font-weight: 600;
+        }
+
+        .label {
+            font-size: 0.8rem;
+            color: #666;
+            text-align: center;
+            max-width: 90px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .btn {
+            display: block;
+            width: 240px;
+            margin: 24px auto 0;
+            padding: 12px 24px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.08s ease;
+            font-weight: 700;
+        }
+
+        .btn:hover { background-color: #3e8e41; }
+        .btn:active { transform: translateY(1px); }
+        .btn:disabled { background-color: #aab4bf; cursor: not-allowed; }
+
+        .results {
+            display: none;
+            text-align: center;
+            padding: 10px 0 0;
+        }
+
+        .results h2 {
+            margin-bottom: 10px;
+            font-size: 1.4rem;
+        }
+
+        .muted {
+            color: #6b7280;
+            margin-bottom: 14px;
+        }
+
+        .chart-wrap {
+            width: 100%;
+            max-width: 640px;
+            margin: 0 auto;
+            background: #fff;
+            border: 1px solid #eef2f7;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+        }
+
+        #radarChart {
+            width: 100%;
+            height: 420px;
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 20px; margin-bottom: 20px; }
+            h1 { font-size: 1.5rem; }
+            .likert-scale { flex-wrap: wrap; gap: 12px; }
+            .option { width: 45%; margin: 5px 0; }
+            .label { max-width: 140px; }
+            #radarChart { height: 360px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="survey">
+        <h1>Анкета-опросник</h1>
+        <div id="questions">
+            <div class="question" data-q="1">
+                <p>1. Чувствую ли я себя в безопасности в классе?</p>
+                <div class="likert-scale" data-question="1">
+                    <div class="option" data-value="1"><div class="circle">1</div><span class="label">Полностью не согласен</span></div>
+                    <div class="option" data-value="2"><div class="circle">2</div><span class="label">Не согласен</span></div>
+                    <div class="option" data-value="3"><div class="circle">3</div><span class="label">Нейтрально</span></div>
+                    <div class="option" data-value="4"><div class="circle">4</div><span class="label">Согласен</span></div>
+                    <div class="option" data-value="5"><div class="circle">5</div><span class="label">Полностью согласен</span></div>
+                </div>
+            </div>
+
+            <div class="question" data-q="2">
+                <p>2. Насколько я удовлетворён качеством преподавания?</p>
+                <div class="likert-scale" data-question="2">
+                    <div class="option" data-value="1"><div class="circle">1</div><span class="label">Полностью не согласен</span></div>
+                    <div class="option" data-value="2"><div class="circle">2</div><span class="label">Не согласен</span></div>
+                    <div class="option" data-value="3"><div class="circle">3</div><span class="label">Нейтрально</span></div>
+                    <div class="option" data-value="4"><div class="circle">4</div><span class="label">Согласен</span></div>
+                    <div class="option" data-value="5"><div class="circle">5</div><span class="label">Полностью согласен</span></div>
+                </div>
+            </div>
+
+            <div class="question" data-q="3">
+                <p>3. Достаточно ли у меня возможностей для самовыражения?</p>
+                <div class="likert-scale" data-question="3">
+                    <div class="option" data-value="1"><div class="circle">1</div><span class="label">Полностью не согласен</span></div>
+                    <div class="option" data-value="2"><div class="circle">2</div><span class="label">Не согласен</span></div>
+                    <div class="option" data-value="3"><div class="circle">3</div><span class="label">Нейтрально</span></div>
+                    <div class="option" data-value="4"><div class="circle">4</div><span class="label">Согласен</span></div>
+                    <div class="option" data-value="5"><div class="circle">5</div><span class="label">Полностью согласен</span></div>
+                </div>
+            </div>
+
+            <div class="question" data-q="4">
+                <p>4. Чувствую ли я поддержку от учителей и одноклассников?</p>
+                <div class="likert-scale" data-question="4">
+                    <div class="option" data-value="1"><div class="circle">1</div><span class="label">Полностью не согласен</span></div>
+                    <div class="option" data-value="2"><div class="circle">2</div><span class="label">Не согласен</span></div>
+                    <div class="option" data-value="3"><div class="circle">3</div><span class="label">Нейтрально</span></div>
+                    <div class="option" data-value="4"><div class="circle">4</div><span class="label">Согласен</span></div>
+                    <div class="option" data-value="5"><div class="circle">5</div><span class="label">Полностью согласен</span></div>
+                </div>
+            </div>
+
+            <div class="question" data-q="5">
+                <p>5. Нравится ли мне атмосфера в нашей школе/классе?</p>
+                <div class="likert-scale" data-question="5">
+                    <div class="option" data-value="1"><div class="circle">1</div><span class="label">Полностью не согласен</span></div>
+                    <div class="option" data-value="2"><div class="circle">2</div><span class="label">Не согласен</span></div>
+                    <div class="option" data-value="3"><div class="circle">3</div><span class="label">Нейтрально</span></div>
+                    <div class="option" data-value="4"><div class="circle">4</div><span class="label">Согласен</span></div>
+                    <div class="option" data-value="5"><div class="circle">5</div><span class="label">Полностью согласен</span></div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn" id="showResults" type="button" disabled>Показать результаты</button>
+    </div>
+
+    <div class="container results" id="results">
+        <h2>Результаты</h2>
+        <div class="muted">Радар‑диаграмма построена по вашим ответам (1–5).</div>
+        <div class="chart-wrap">
+            <canvas id="radarChart"></canvas>
+        </div>
+        <button class="btn" id="restart" type="button">Пройти заново</button>
+    </div>
+
+    <script>
+        const answers = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+        const showBtn = document.getElementById('showResults');
+        const surveyEl = document.getElementById('survey');
+        const resultsEl = document.getElementById('results');
+        const restartBtn = document.getElementById('restart');
+        const canvas = document.getElementById('radarChart');
+        const ctx = canvas.getContext('2d');
+
+        function allAnswered() {
+            return Object.values(answers).every(v => v > 0);
+        }
+
+        function updateButtonState() {
+            showBtn.disabled = !allAnswered();
+        }
+
+        document.querySelectorAll('.likert-scale').forEach(scale => {
+            scale.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', () => {
+                    scale.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+                    option.classList.add('selected');
+                    const q = Number(scale.getAttribute('data-question'));
+                    const v = Number(option.getAttribute('data-value'));
+                    answers[q] = v;
+                    updateButtonState();
+                });
+            });
+        });
+
+        function resizeCanvas() {
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = Math.floor(rect.width * dpr);
+            canvas.height = Math.floor(rect.height * dpr);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        function drawRadar(values) {
+            resizeCanvas();
+
+            const w = canvas.getBoundingClientRect().width;
+            const h = canvas.getBoundingClientRect().height;
+            ctx.clearRect(0, 0, w, h);
+
+            const cx = w / 2;
+            const cy = h / 2;
+            const r = Math.min(cx, cy) * 0.68;
+
+            const labels = [
+                'Безопасность',
+                'Качество',
+                'Самовыражение',
+                'Поддержка',
+                'Атмосфера'
+            ];
+
+            const n = values.length;
+            const step = (Math.PI * 2) / n;
+
+            // сетка
+            ctx.strokeStyle = '#e5e7eb';
+            ctx.lineWidth = 1;
+            for (let level = 1; level <= 5; level++) {
+                ctx.beginPath();
+                for (let i = 0; i < n; i++) {
+                    const a = i * step - Math.PI / 2;
+                    const rr = (level / 5) * r;
+                    const x = cx + Math.cos(a) * rr;
+                    const y = cy + Math.sin(a) * rr;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.stroke();
+            }
+
+            // оси + подписи
+            ctx.strokeStyle = '#cbd5e1';
+            for (let i = 0; i < n; i++) {
+                const a = i * step - Math.PI / 2;
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+                ctx.stroke();
+
+                const lx = cx + Math.cos(a) * (r + 18);
+                const ly = cy + Math.sin(a) * (r + 18);
+                ctx.fillStyle = '#475569';
+                ctx.font = '12px Segoe UI, Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(labels[i], lx, ly);
+            }
+
+            // полигон данных
+            ctx.beginPath();
+            for (let i = 0; i < n; i++) {
+                const a = i * step - Math.PI / 2;
+                const rr = (values[i] / 5) * r;
+                const x = cx + Math.cos(a) * rr;
+                const y = cy + Math.sin(a) * rr;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(76, 175, 80, 0.22)';
+            ctx.strokeStyle = 'rgba(76, 175, 80, 0.95)';
+            ctx.lineWidth = 2;
+            ctx.fill();
+            ctx.stroke();
+
+            // точки
+            for (let i = 0; i < n; i++) {
+                const a = i * step - Math.PI / 2;
+                const rr = (values[i] / 5) * r;
+                const x = cx + Math.cos(a) * rr;
+                const y = cy + Math.sin(a) * rr;
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(76, 175, 80, 1)';
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        }
+
+        showBtn.addEventListener('click', () => {
+            if (!allAnswered()) return;
+            surveyEl.style.display = 'none';
+            resultsEl.style.display = 'block';
+            drawRadar([answers[1], answers[2], answers[3], answers[4], answers[5]]);
+        });
+
+        restartBtn.addEventListener('click', () => {
+            Object.keys(answers).forEach(k => (answers[k] = 0));
+            document.querySelectorAll('.option.selected').forEach(o => o.classList.remove('selected'));
+            updateButtonState();
+            resultsEl.style.display = 'none';
+            surveyEl.style.display = 'block';
+        });
+
+        window.addEventListener('resize', () => {
+            if (resultsEl.style.display === 'block') {
+                drawRadar([answers[1], answers[2], answers[3], answers[4], answers[5]]);
+            }
+        });
+
+        updateButtonState();
+    </script>
+</body>
+</html>
+
+

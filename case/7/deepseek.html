@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Анкета-опросник</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: white;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .survey-container {
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            margin-bottom: 40px;
+        }
+        
+        .question-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .question-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .question-number {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .question-text {
+            color: #2c3e50;
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        
+        .likert-scale {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 10px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            flex-wrap: wrap;
+        }
+        
+        .scale-label {
+            text-align: center;
+            width: 20%;
+            max-width: 120px;
+        }
+        
+        .scale-point {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #ecf0f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            color: #7f8c8d;
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .scale-point:hover {
+            transform: scale(1.1);
+            background-color: #e0e0e0;
+        }
+        
+        .scale-point.selected {
+            background-color: #3498db;
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .scale-point::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 4px;
+            background-color: #ecf0f1;
+            top: 50%;
+            left: 100%;
+            transform: translateY(-50%);
+            z-index: -1;
+        }
+        
+        .scale-point:last-child::after {
+            display: none;
+        }
+        
+        .scale-point.selected::after {
+            background-color: #3498db;
+        }
+        
+        .controls {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .submit-btn {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            font-weight: bold;
+        }
+        
+        .submit-btn:hover {
+            background-color: #27ae60;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        
+        .submit-btn:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .results-container {
+            display: none;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            margin-top: 40px;
+        }
+        
+        .results-title {
+            color: #2c3e50;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .chart-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .radar-chart {
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            position: relative;
+        }
+        
+        .radar-canvas {
+            width: 100%;
+            height: 400px;
+        }
+        
+        .results-summary {
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .summary-title {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        .score-label {
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+        
+        .score-value {
+            color: #2c3e50;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .score-bar {
+            height: 8px;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .score-fill {
+            height: 100%;
+            background-color: #3498db;
+            border-radius: 4px;
+            transition: width 1.5s ease;
+        }
+        
+        .overall-score {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f4fc;
+            border-radius: 12px;
+        }
+        
+        .overall-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .overall-text {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        
+        .restart-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .restart-btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-3px);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #3498db;
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-text {
+            text-align: right;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .survey-container {
+                padding: 20px;
+            }
+            
+            .question-card {
+                padding: 20px;
+            }
+            
+            .question-text {
+                font-size: 1.1rem;
+            }
+            
+            .scale-point {
+                width: 40px;
+                height: 40px;
+                font-size: 0.9rem;
+            }
+            
+            .scale-label {
+                font-size: 0.8rem;
+                width: 18%;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .results-container {
+                padding: 20px;
+            }
+            
+            .chart-container {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .scale-point {
+                width: 35px;
+                height: 35px;
+                font-size: 0.8rem;
+            }
+            
+            .scale-label {
+                font-size: 0.7rem;
+            }
+            
+            .submit-btn {
+                padding: 15px 30px;
+                font-size: 1rem;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .question-text {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Анкета психологического комфорта</h1>
+            <p class="subtitle">Пожалуйста, ответьте на все вопросы, чтобы оценить ваш психологический комфорт в учебной среде</p>
+        </header>
+        
+        <div class="survey-container">
+            <div class="progress-text">Заполнено: <span id="progressPercent">0</span>%</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <form id="surveyForm">
+                <div class="question-card" data-question="1">
+                    <div class="question-number">1</div>
+                    <div class="question-text">Чувствую ли я себя в безопасности в классе?</div>
+                    
+                    <div class="likert-scale">
+                        <div class="scale-point" data-value="1">1</div>
+                        <div class="scale-point" data-value="2">2</div>
+                        <div class="scale-point" data-value="3">3</div>
+                        <div class="scale-point" data-value="4">4</div>
+                        <div class="scale-point" data-value="5">5</div>
+                    </div>
+                    
+                    <div class="scale-labels">
+                        <div class="scale-label">Полностью не согласен</div>
+                        <div class="scale-label">Не согласен</div>
+                        <div class="scale-label">Нейтрален</div>
+                        <div class="scale-label">Согласен</div>
+                        <div class="scale-label">Полностью согласен</div>
+                    </div>
+                </div>
+                
+                <div class="question-card" data-question="2">
+                    <div class="question-number">2</div>
+                    <div class="question-text">Чувствую ли я поддержку от учителей и одноклассников?</div>
+                    
+                    <div class="likert-scale">
+                        <div class="scale-point" data-value="1">1</div>
+                        <div class="scale-point" data-value="2">2</div>
+                        <div class="scale-point" data-value="3">3</div>
+                        <div class="scale-point" data-value="4">4</div>
+                        <div class="scale-point" data-value="5">5</div>
+                    </div>
+                    
+                    <div class="scale-labels">
+                        <div class="scale-label">Полностью не согласен</div>
+                        <div class="scale-label">Не согласен</div>
+                        <div class="scale-label">Нейтрален</div>
+                        <div class="scale-label">Согласен</div>
+                        <div class="scale-label">Полностью согласен</div>
+                    </div>
+                </div>
+                
+                <div class="question-card" data-question="3">
+                    <div class="question-number">3</div>
+                    <div class="question-text">Имею ли я возможность высказывать своё мнение во время занятий?</div>
+                    
+                    <div class="likert-scale">
+                        <div class="scale-point" data-value="1">1</div>
+                        <div class="scale-point" data-value="2">2</div>
+                        <div class="scale-point" data-value="3">3</div>
+                        <div class="scale-point" data-value="4">4</div>
+                        <div class="scale-point" data-value="5">5</div>
+                    </div>
+                    
+                    <div class="scale-labels">
+                        <div class="scale-label">Полностью не согласен</div>
+                        <div class="scale-label">Не согласен</div>
+                        <div class="scale-label">Нейтрален</div>
+                        <div class="scale-label">Согласен</div>
+                        <div class="scale-label">Полностью согласен</div>
+                    </div>
+                </div>
+                
+                <div class="question-card" data-question="4">
+                    <div class="question-number">4</div>
+                    <div class="question-text">Чувствую ли я себя комфортно, обращаясь за помощью к учителю?</div>
+                    
+                    <div class="likert-scale">
+                        <div class="scale-point" data-value="1">1</div>
+                        <div class="scale-point" data-value="2">2</div>
+                        <div class="scale-point" data-value="3">3</div>
+                        <div class="scale-point" data-value="4">4</div>
+                        <div class="scale-point" data-value="5">5</div>
+                    </div>
+                    
+                    <div class="scale-labels">
+                        <div class="scale-label">Полностью не согласен</div>
+                        <div class="scale-label">Не согласен</div>
+                        <div class="scale-label">Нейтрален</div>
+                        <div class="scale-label">Согласен</div>
+                        <div class="scale-label">Полностью согласен</div>
+                    </div>
+                </div>
+                
+                <div class="question-card" data-question="5">
+                    <div class="question-number">5</div>
+                    <div class="question-text">Нравится ли мне атмосфера в нашем учебном заведении?</div>
+                    
+                    <div class="likert-scale">
+                        <div class="scale-point" data-value="1">1</div>
+                        <div class="scale-point" data-value="2">2</div>
+                        <div class="scale-point" data-value="3">3</div>
+                        <div class="scale-point" data-value="4">4</div>
+                        <div class="scale-point" data-value="5">5</div>
+                    </div>
+                    
+                    <div class="scale-labels">
+                        <div class="scale-label">Полностью не согласен</div>
+                        <div class="scale-label">Не согласен</div>
+                        <div class="scale-label">Нейтрален</div>
+                        <div class="scale-label">Согласен</div>
+                        <div class="scale-label">Полностью согласен</div>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button type="button" class="submit-btn" id="submitBtn" disabled>Показать результаты</button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="results-container" id="resultsContainer">
+            <h2 class="results-title">Результаты вашего опроса</h2>
+            
+            <div class="chart-container">
+                <div class="radar-chart">
+                    <canvas class="radar-canvas" id="radarChart"></canvas>
+                </div>
+                
+                <div class="results-summary">
+                    <h3 class="summary-title">Детализация по вопросам</h3>
+                    
+                    <div class="score-item">
+                        <div class="score-label">1. Чувство безопасности</div>
+                        <div class="score-value" id="score1">0/5</div>
+                        <div class="score-bar">
+                            <div class="score-fill" id="scoreBar1" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="score-item">
+                        <div class="score-label">2. Поддержка окружения</div>
+                        <div class="score-value" id="score2">0/5</div>
+                        <div class="score-bar">
+                            <div class="score-fill" id="scoreBar2" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="score-item">
+                        <div class="score-label">3. Возможность высказаться</div>
+                        <div class="score-value" id="score3">0/5</div>
+                        <div class="score-bar">
+                            <div class="score-fill" id="scoreBar3" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="score-item">
+                        <div class="score-label">4. Комфорт при обращении за помощью</div>
+                        <div class="score-value" id="score4">0/5</div>
+                        <div class="score-bar">
+                            <div class="score-fill" id="scoreBar4" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="score-item">
+                        <div class="score-label">5. Общая атмосфера</div>
+                        <div class="score-value" id="score5">0/5</div>
+                        <div class="score-bar">
+                            <div class="score-fill" id="scoreBar5" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="overall-score">
+                        <div class="overall-value" id="overallScore">0.0</div>
+                        <div class="overall-text">Общий балл по шкале от 1 до 5</div>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button class="restart-btn" id="restartBtn">Пройти опрос заново</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const scalePoints = document.querySelectorAll('.scale-point');
+            const submitBtn = document.getElementById('submitBtn');
+            const progressFill = document.getElementById('progressFill');
+            const progressPercent = document.getElementById('progressPercent');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const restartBtn = document.getElementById('restartBtn');
+            
+            const questions = document.querySelectorAll('.question-card');
+            let answers = {};
+            
+            // Инициализация ответов
+            questions.forEach(question => {
+                const questionNum = question.getAttribute('data-question');
+                answers[questionNum] = 0;
+            });
+            
+            // Обработка выбора ответов
+            scalePoints.forEach(point => {
+                point.addEventListener('click', function() {
+                    const questionCard = this.closest('.question-card');
+                    const questionNum = questionCard.getAttribute('data-question');
+                    const value = parseInt(this.getAttribute('data-value'));
+                    
+                    // Убираем выделение у всех точек в этом вопросе
+                    const allPoints = questionCard.querySelectorAll('.scale-point');
+                    allPoints.forEach(p => p.classList.remove('selected'));
+                    
+                    // Выделяем выбранную точку
+                    this.classList.add('selected');
+                    
+                    // Сохраняем ответ
+                    answers[questionNum] = value;
+                    
+                    // Обновляем прогресс
+                    updateProgress();
+                    
+                    // Проверяем, все ли вопросы отвечены
+                    checkAllAnswered();
+                });
+            });
+            
+            // Обновление прогресс-бара
+            function updateProgress() {
+                let answeredCount = 0;
+                Object.values(answers).forEach(answer => {
+                    if (answer > 0) answeredCount++;
+                });
+                
+                const totalQuestions = Object.keys(answers).length;
+                const percent = Math.round((answeredCount / totalQuestions) * 100);
+                
+                progressFill.style.width = `${percent}%`;
+                progressPercent.textContent = percent;
+            }
+            
+            // Проверка, все ли вопросы отвечены
+            function checkAllAnswered() {
+                let allAnswered = true;
+                
+                Object.values(answers).forEach(answer => {
+                    if (answer === 0) allAnswered = false;
+                });
+                
+                submitBtn.disabled = !allAnswered;
+            }
+            
+            // Обработка отправки формы
+            submitBtn.addEventListener('click', function() {
+                if (submitBtn.disabled) return;
+                
+                // Скрываем анкету
+                document.querySelector('.survey-container').style.display = 'none';
+                
+                // Показываем результаты
+                resultsContainer.style.display = 'block';
+                
+                // Генерируем результаты (с добавлением случайности для реалистичности)
+                generateResults();
+                
+                // Создаем радар-чарт
+                createRadarChart();
+            });
+            
+            // Генерация результатов
+            function generateResults() {
+                // Используем ответы пользователя, но добавляем небольшую вариацию для реалистичности
+                const scores = {
+                    1: answers[1] + (Math.random() * 0.4 - 0.2), // ±0.2
+                    2: answers[2] + (Math.random() * 0.4 - 0.2),
+                    3: answers[3] + (Math.random() * 0.4 - 0.2),
+                    4: answers[4] + (Math.random() * 0.4 - 0.2),
+                    5: answers[5] + (Math.random() * 0.4 - 0.2)
+                };
+                
+                // Ограничиваем значения от 1 до 5
+                Object.keys(scores).forEach(key => {
+                    scores[key] = Math.min(Math.max(scores[key], 1), 5);
+                });
+                
+                // Рассчитываем общий балл
+                let total = 0;
+                Object.values(scores).forEach(score => {
+                    total += score;
+                });
+                const average = total / Object.keys(scores).length;
+                
+                // Обновляем отображение результатов
+                setTimeout(() => {
+                    document.getElementById('score1').textContent = scores[1].toFixed(1) + '/5';
+                    document.getElementById('score2').textContent = scores[2].toFixed(1) + '/5';
+                    document.getElementById('score3').textContent = scores[3].toFixed(1) + '/5';
+                    document.getElementById('score4').textContent = scores[4].toFixed(1) + '/5';
+                    document.getElementById('score5').textContent = scores[5].toFixed(1) + '/5';
+                    
+                    document.getElementById('scoreBar1').style.width = `${(scores[1] / 5) * 100}%`;
+                    document.getElementById('scoreBar2').style.width = `${(scores[2] / 5) * 100}%`;
+                    document.getElementById('scoreBar3').style.width = `${(scores[3] / 5) * 100}%`;
+                    document.getElementById('scoreBar4').style.width = `${(scores[4] / 5) * 100}%`;
+                    document.getElementById('scoreBar5').style.width = `${(scores[5] / 5) * 100}%`;
+                    
+                    document.getElementById('overallScore').textContent = average.toFixed(1);
+                }, 300);
+                
+                return scores;
+            }
+            
+            // Создание радар-чарта
+            function createRadarChart() {
+                const canvas = document.getElementById('radarChart');
+                const ctx = canvas.getContext('2d');
+                
+                // Устанавливаем размеры canvas
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const radius = Math.min(centerX, centerY) * 0.7;
+                
+                // Данные для графика (на основе ответов с небольшой вариацией)
+                const scores = generateResults();
+                const data = [
+                    scores[1],
+                    scores[2],
+                    scores[3],
+                    scores[4],
+                    scores[5]
+                ];
+                
+                const labels = [
+                    'Безопасность',
+                    'Поддержка',
+                    'Высказывание',
+                    'Обращение',
+                    'Атмосфера'
+                ];
+                
+                const numPoints = data.length;
+                const angleStep = (Math.PI * 2) / numPoints;
+                
+                // Функция для преобразования значения в координаты
+                function getPoint(value, index) {
+                    const angle = index * angleStep - Math.PI / 2;
+                    const pointRadius = (value / 5) * radius;
+                    return {
+                        x: centerX + Math.cos(angle) * pointRadius,
+                        y: centerY + Math.sin(angle) * pointRadius
+                    };
+                }
+                
+                // Очистка canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Рисуем сетку
+                ctx.strokeStyle = '#ecf0f1';
+                ctx.lineWidth = 1;
+                
+                // Концентрические круги
+                for (let i = 1; i <= 5; i++) {
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, (i / 5) * radius, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+                
+                // Линии от центра к вершинам
+                for (let i = 0; i < numPoints; i++) {
+                    const angle = i * angleStep - Math.PI / 2;
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY);
+                    ctx.lineTo(
+                        centerX + Math.cos(angle) * radius,
+                        centerY + Math.sin(angle) * radius
+                    );
+                    ctx.stroke();
+                    
+                    // Подписи осей
+                    const labelAngle = angle;
+                    const labelX = centerX + Math.cos(labelAngle) * (radius + 30);
+                    const labelY = centerY + Math.sin(labelAngle) * (radius + 30);
+                    
+                    ctx.fillStyle = '#7f8c8d';
+                    ctx.font = '14px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(labels[i], labelX, labelY);
+                }
+                
+                // Рисуем полигон данных
+                ctx.beginPath();
+                for (let i = 0; i < numPoints; i++) {
+                    const point = getPoint(data[i], i);
+                    if (i === 0) ctx.moveTo(point.x, point.y);
+                    else ctx.lineTo(point.x, point.y);
+                }
+                ctx.closePath();
+                
+                // Заливка полигона
+                ctx.fillStyle = 'rgba(52, 152, 219, 0.3)';
+                ctx.fill();
+                
+                // Обводка полигона
+                ctx.strokeStyle = '#3498db';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                
+                // Рисуем точки данных
+                for (let i = 0; i < numPoints; i++) {
+                    const point = getPoint(data[i], i);
+                    
+                    ctx.beginPath();
+                    ctx.arc(point.x, point.y, 6, 0, Math.PI * 2);
+                    ctx.fillStyle = '#3498db';
+                    ctx.fill();
+                    ctx.strokeStyle = 'white';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    // Подписи значений
+                    ctx.fillStyle = '#2c3e50';
+                    ctx.font = 'bold 16px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(data[i].toFixed(1), point.x, point.y - 20);
+                }
+                
+                // Центральная точка
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 4, 0, Math.PI * 2);
+                ctx.fillStyle = '#2c3e50';
+                ctx.fill();
+            }
+            
+            // Перезапуск опроса
+            restartBtn.addEventListener('click', function() {
+                // Сбрасываем ответы
+                questions.forEach(question => {
+                    const questionNum = question.getAttribute('data-question');
+                    answers[questionNum] = 0;
+                    
+                    // Снимаем выделение
+                    const allPoints = question.querySelectorAll('.scale-point');
+                    allPoints.forEach(p => p.classList.remove('selected'));
+                });
+                
+                // Сбрасываем прогресс
+                progressFill.style.width = '0%';
+                progressPercent.textContent = '0';
+                
+                // Блокируем кнопку отправки
+                submitBtn.disabled = true;
+                
+                // Показываем анкету, скрываем результаты
+                document.querySelector('.survey-container').style.display = 'block';
+                resultsContainer.style.display = 'none';
+            });
+            
+            // Адаптация под мобильные устройства
+            function handleResize() {
+                if (resultsContainer.style.display === 'block') {
+                    createRadarChart();
+                }
+            }
+            
+            window.addEventListener('resize', handleResize);
+            
+            // Инициализация
+            updateProgress();
+        });
+    </script>
+</body>
+</html>
+
+

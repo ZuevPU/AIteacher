@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Атомный тест</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 2.2rem;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .question {
+            font-size: 1.4rem;
+            color: #34495e;
+            margin-bottom: 40px;
+            font-weight: 600;
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .option-card {
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .option-letter {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .option-text {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .option-card.correct {
+            background-color: #d4edda;
+            border-color: #28a745;
+            animation: glow 1.5s ease infinite alternate;
+        }
+        
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 15px rgba(40, 167, 69, 0.5);
+            }
+            to {
+                box-shadow: 0 0 25px rgba(40, 167, 69, 0.8);
+            }
+        }
+        
+        .option-card.incorrect {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+            animation: shake 0.5s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        
+        .result-message {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 20px;
+            min-height: 40px;
+            padding: 10px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .correct-message {
+            color: #28a745;
+        }
+        
+        .incorrect-message {
+            color: #dc3545;
+        }
+        
+        .firework {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        @keyframes firework {
+            0% { 
+                transform: translate(0, 0); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: translate(var(--tx), var(--ty)); 
+                opacity: 0; 
+            }
+        }
+        
+        .atomic-number {
+            font-size: 1rem;
+            color: #7f8c8d;
+            margin-top: 5px;
+            font-weight: normal;
+        }
+        
+        @media (max-width: 768px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .question {
+                font-size: 1.2rem;
+            }
+            
+            .option-text {
+                font-size: 1.3rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .question {
+                font-size: 1.1rem;
+            }
+            
+            .option-card {
+                padding: 20px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Элементарный тест</h1>
+        <div class="question">Какой элемент таблицы Менделеева имеет атомный номер 6?</div>
+        
+        <div class="options-grid">
+            <div class="option-card" data-answer="oxygen">
+                <div class="option-letter">А</div>
+                <div class="option-text">Кислород</div>
+                <div class="atomic-number">Атомный номер: 8</div>
+            </div>
+            
+            <div class="option-card" data-answer="carbon">
+                <div class="option-letter">Б</div>
+                <div class="option-text">Углерод</div>
+                <div class="atomic-number">Атомный номер: 6</div>
+            </div>
+            
+            <div class="option-card" data-answer="nitrogen">
+                <div class="option-letter">В</div>
+                <div class="option-text">Азот</div>
+                <div class="atomic-number">Атомный номер: 7</div>
+            </div>
+            
+            <div class="option-card" data-answer="gold">
+                <div class="option-letter">Г</div>
+                <div class="option-text">Золото</div>
+                <div class="atomic-number">Атомный номер: 79</div>
+            </div>
+        </div>
+        
+        <div class="result-message" id="resultMessage"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const optionCards = document.querySelectorAll('.option-card');
+            const resultMessage = document.getElementById('resultMessage');
+            const correctAnswer = 'carbon';
+            let answered = false;
+            
+            optionCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    if (answered) return;
+                    
+                    const selectedAnswer = this.getAttribute('data-answer');
+                    const allCards = document.querySelectorAll('.option-card');
+                    
+                    // Отключаем все карточки после ответа
+                    answered = true;
+                    
+                    // Убираем hover эффекты
+                    allCards.forEach(c => {
+                        c.style.pointerEvents = 'none';
+                    });
+                    
+                    if (selectedAnswer === correctAnswer) {
+                        // Правильный ответ
+                        this.classList.add('correct');
+                        resultMessage.textContent = 'Верно! Углерод действительно имеет атомный номер 6.';
+                        resultMessage.classList.add('correct-message');
+                        
+                        // Создаем фейерверк
+                        createFireworks(this);
+                    } else {
+                        // Неправильный ответ
+                        this.classList.add('incorrect');
+                        resultMessage.textContent = 'Неверно! Углерод имеет атомный номер 6.';
+                        resultMessage.classList.add('incorrect-message');
+                        
+                        // Подсвечиваем правильный ответ
+                        allCards.forEach(c => {
+                            if (c.getAttribute('data-answer') === correctAnswer) {
+                                c.classList.add('correct');
+                            }
+                        });
+                    }
+                });
+            });
+            
+            function createFireworks(card) {
+                const colors = ['#28a745', '#2ecc71', '#1abc9c', '#16a085'];
+                const rect = card.getBoundingClientRect();
+                
+                // Создаем 20 частиц фейерверка
+                for (let i = 0; i < 20; i++) {
+                    const firework = document.createElement('div');
+                    firework.classList.add('firework');
+                    
+                    // Случайный цвет
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    firework.style.backgroundColor = color;
+                    
+                    // Случайное начальное положение в центре карточки
+                    const startX = rect.left + rect.width / 2;
+                    const startY = rect.top + rect.height / 2;
+                    
+                    // Случайное конечное положение
+                    const angle = Math.random() * 2 * Math.PI;
+                    const distance = 50 + Math.random() * 100;
+                    const tx = Math.cos(angle) * distance;
+                    const ty = Math.sin(angle) * distance;
+                    
+                    firework.style.setProperty('--tx', `${tx}px`);
+                    firework.style.setProperty('--ty', `${ty}px`);
+                    firework.style.left = `${startX}px`;
+                    firework.style.top = `${startY}px`;
+                    
+                    firework.style.animation = `firework 0.8s ease-out forwards`;
+                    
+                    document.body.appendChild(firework);
+                    
+                    // Удаляем элемент после анимации
+                    setTimeout(() => {
+                        firework.remove();
+                    }, 800);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
+

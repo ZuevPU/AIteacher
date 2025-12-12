@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель обратной связи: Мусорник, Чемодан, Мясорубка</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .feedback-panel {
+            width: 100%;
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            text-align: center;
+        }
+
+        .category {
+            padding: 30px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .category.active {
+            animation: pulse-glow 0.6s ease-in-out;
+            box-shadow: 0 0 25px rgba(76, 175, 80, 0.4) !important;
+        }
+
+        @keyframes pulse-glow {
+            0% { transform: scale(1); box-shadow: 0 0 25px rgba(76, 175, 80, 0.4); }
+            50% { transform: scale(1.03); box-shadow: 0 0 35px rgba(76, 175, 80, 0.6); }
+            100% { transform: scale(1); box-shadow: 0 0 25px rgba(76, 175, 80, 0.4); }
+        }
+
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .counter {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2196F3;
+            transition: transform 0.4s ease;
+        }
+
+        .counter.animated {
+            animation: counter-grow 0.4s ease-out;
+        }
+
+        @keyframes counter-grow {
+            0% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .feedback-panel {
+                grid-template-columns: 1fr;
+            }
+
+            .category {
+                margin-bottom: 20px;
+                padding: 25px;
+            }
+
+            .icon {
+                font-size: 3rem;
+            }
+
+            .title {
+                font-size: 1.1rem;
+            }
+
+            .counter {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="feedback-panel">
+        <div class="category" id="trash">
+            <div class="icon">🗑️</div>
+            <div class="title">Мусорник<br>(Выбросить)</div>
+            <div class="counter">0</div>
+        </div>
+
+        <div class="category" id="suitcase">
+            <div class="icon">🧳</div>
+            <div class="title">Чемодан<br>(Взять с собой)</div>
+            <div class="counter">0</div>
+        </div>
+
+        <div class="category" id="grinder">
+            <div class="icon">⚙️</div>
+            <div class="title">Мясорубка<br>(Обдумать)</div>
+            <div class="counter">0</div>
+        </div>
+    </div>
+
+    <script>
+        const categories = {
+            trash: document.getElementById('trash'),
+            suitcase: document.getElementById('suitcase'),
+            grinder: document.getElementById('grinder')
+        };
+
+        let counters = {
+            trash: 0,
+            suitcase: 0,
+            grinder: 0
+        };
+
+        function updateCounter(categoryId) {
+            counters[categoryId]++;
+            const counterElement = categories[categoryId].querySelector('.counter');
+            counterElement.textContent = counters[categoryId];
+
+            counterElement.classList.add('animated');
+            categories[categoryId].classList.add('active');
+
+            setTimeout(() => {
+                counterElement.classList.remove('animated');
+                categories[categoryId].classList.remove('active');
+            }, 600);
+        }
+
+        Object.keys(categories).forEach(key => {
+            categories[key].addEventListener('click', () => updateCounter(key));
+        });
+    </script>
+</body>
+</html>
+
+

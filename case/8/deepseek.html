@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель обратной связи</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: white;
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        header {
+            margin-bottom: 50px;
+            padding: 0 20px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .feedback-panel {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+        
+        .feedback-zone {
+            flex: 1;
+            min-width: 300px;
+            max-width: 350px;
+            background-color: #f8f9fa;
+            border-radius: 25px;
+            padding: 40px 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            border: 3px solid transparent;
+        }
+        
+        .feedback-zone:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+        
+        .feedback-zone:active {
+            transform: translateY(-5px);
+        }
+        
+        .feedback-zone.clicked {
+            animation: pulse 0.8s ease;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .icon-container {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            font-size: 4.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .trash-icon {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
+        }
+        
+        .suitcase-icon {
+            background-color: rgba(52, 152, 219, 0.15);
+            color: #3498db;
+        }
+        
+        .grinder-icon {
+            background-color: rgba(46, 204, 113, 0.15);
+            color: #2ecc71;
+        }
+        
+        .zone-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .zone-description {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            min-height: 80px;
+        }
+        
+        .vote-counter {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: auto;
+        }
+        
+        .vote-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            min-width: 90px;
+            transition: all 0.5s ease;
+        }
+        
+        .trash-vote { color: #e74c3c; }
+        .suitcase-vote { color: #3498db; }
+        .grinder-vote { color: #2ecc71; }
+        
+        .vote-label {
+            font-size: 1.2rem;
+            color: #95a5a6;
+            font-weight: 600;
+        }
+        
+        .vote-number.increasing {
+            animation: numberBounce 0.5s ease;
+        }
+        
+        @keyframes numberBounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+        
+        .instructions {
+            background-color: #f8f9fa;
+            padding: 30px;
+            border-radius: 20px;
+            margin-top: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+        
+        .instructions h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .instructions p {
+            color: #7f8c8d;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+        
+        .reset-btn {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.2rem;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            margin-top: 30px;
+            font-weight: 600;
+        }
+        
+        .reset-btn:hover {
+            background-color: #5a6268;
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+        }
+        
+        .total-votes {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .total-votes h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.4rem;
+        }
+        
+        .total-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #9b59b6;
+            margin-bottom: 10px;
+        }
+        
+        .percentage-bar {
+            height: 12px;
+            background-color: #ecf0f1;
+            border-radius: 6px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        
+        .percentage-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 1s ease;
+        }
+        
+        .trash-fill { background-color: #e74c3c; }
+        .suitcase-fill { background-color: #3498db; }
+        .grinder-fill { background-color: #2ecc71; }
+        
+        .percentage-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+        
+        @media (max-width: 768px) {
+            .feedback-panel { flex-direction: column; align-items: center; }
+            .feedback-zone { width: 100%; max-width: 400px; }
+            h1 { font-size: 2.3rem; }
+            .subtitle { font-size: 1.1rem; }
+            .vote-number { font-size: 3rem; }
+        }
+        
+        @media (max-width: 480px) {
+            h1 { font-size: 2rem; }
+            .feedback-zone { padding: 30px 20px; }
+            .icon-container { width: 90px; height: 90px; font-size: 3.2rem; }
+            .zone-title { font-size: 1.6rem; }
+            .zone-description { font-size: 1rem; }
+            .vote-number { font-size: 2.5rem; }
+            .reset-btn { padding: 15px 40px; font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Панель обратной связи</h1>
+            <p class="subtitle">Оцените материал занятия, выбрав одну из категорий. Нажмите на зону, которая лучше всего описывает ваше отношение к пройденному материалу.</p>
+        </header>
+        
+        <div class="feedback-panel">
+            <div class="feedback-zone" id="trashZone">
+                <div class="icon-container trash-icon">🗑️</div>
+                <h2 class="zone-title">Мусорник</h2>
+                <p class="zone-description">Материал не пригодился, не был полезным или актуальным для меня. Можно смело выбросить из памяти.</p>
+                <div class="vote-counter">
+                    <div class="vote-number trash-vote" id="trashVotes">0</div>
+                    <div class="vote-label">голосов</div>
+                </div>
+            </div>
+            
+            <div class="feedback-zone" id="suitcaseZone">
+                <div class="icon-container suitcase-icon">🧳</div>
+                <h2 class="zone-title">Чемодан</h2>
+                <p class="zone-description">Ценная информация, которую я буду использовать в будущем. Возьму с собой в свой профессиональный багаж.</p>
+                <div class="vote-counter">
+                    <div class="vote-number suitcase-vote" id="suitcaseVotes">0</div>
+                    <div class="vote-label">голосов</div>
+                </div>
+            </div>
+            
+            <div class="feedback-zone" id="grinderZone">
+                <div class="icon-container grinder-icon">⚙️</div>
+                <h2 class="zone-title">Мясорубка</h2>
+                <p class="zone-description">Материал требует осмысления, доработки или адаптации под мои задачи. Нужно "пропустить через мясорубку".</p>
+                <div class="vote-counter">
+                    <div class="vote-number grinder-vote" id="grinderVotes">0</div>
+                    <div class="vote-label">голосов</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="total-votes">
+            <h3>Всего голосов</h3>
+            <div class="total-number" id="totalVotes">0</div>
+            <div class="percentage-bar">
+                <div class="percentage-fill trash-fill" id="trashPercentage" style="width: 0%"></div>
+                <div class="percentage-fill suitcase-fill" id="suitcasePercentage" style="width: 0%"></div>
+                <div class="percentage-fill grinder-fill" id="grinderPercentage" style="width: 0%"></div>
+            </div>
+            <div class="percentage-labels">
+                <div>Мусорник: <span id="trashPercent">0</span>%</div>
+                <div>Чемодан: <span id="suitcasePercent">0</span>%</div>
+                <div>Мясорубка: <span id="grinderPercent">0</span>%</div>
+            </div>
+        </div>
+        
+        <button class="reset-btn" id="resetBtn">Сбросить голоса</button>
+        
+        <div class="instructions">
+            <h3>Как использовать панель обратной связи?</h3>
+            <p>Каждая зона представляет вашу оценку материала занятия. Нажмите на зону, которая наиболее точно отражает ваше мнение.
+            <strong>Мусорник</strong> - материал не был полезен. <strong>Чемодан</strong> - ценный материал для использования.
+            <strong>Мясорубка</strong> - материал требует доработки и осмысления.</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const trashZone = document.getElementById('trashZone');
+            const suitcaseZone = document.getElementById('suitcaseZone');
+            const grinderZone = document.getElementById('grinderZone');
+            
+            const trashVotesEl = document.getElementById('trashVotes');
+            const suitcaseVotesEl = document.getElementById('suitcaseVotes');
+            const grinderVotesEl = document.getElementById('grinderVotes');
+            
+            const totalVotesEl = document.getElementById('totalVotes');
+            const resetBtn = document.getElementById('resetBtn');
+            
+            const trashPercentageEl = document.getElementById('trashPercentage');
+            const suitcasePercentageEl = document.getElementById('suitcasePercentage');
+            const grinderPercentageEl = document.getElementById('grinderPercentage');
+            
+            const trashPercentEl = document.getElementById('trashPercent');
+            const suitcasePercentEl = document.getElementById('suitcasePercent');
+            const grinderPercentEl = document.getElementById('grinderPercent');
+            
+            let votes = { trash: 0, suitcase: 0, grinder: 0 };
+            
+            function loadVotes() {
+                const savedVotes = localStorage.getItem('feedbackVotes');
+                if (savedVotes) {
+                    votes = JSON.parse(savedVotes);
+                    updateDisplay();
+                }
+            }
+            
+            function saveVotes() {
+                localStorage.setItem('feedbackVotes', JSON.stringify(votes));
+            }
+            
+            function updateDisplay() {
+                trashVotesEl.textContent = votes.trash;
+                suitcaseVotesEl.textContent = votes.suitcase;
+                grinderVotesEl.textContent = votes.grinder;
+                
+                const total = votes.trash + votes.suitcase + votes.grinder;
+                totalVotesEl.textContent = total;
+                
+                const trashPercent = total > 0 ? Math.round((votes.trash / total) * 100) : 0;
+                const suitcasePercent = total > 0 ? Math.round((votes.suitcase / total) * 100) : 0;
+                const grinderPercent = total > 0 ? Math.round((votes.grinder / total) * 100) : 0;
+                
+                trashPercentageEl.style.width = `${trashPercent}%`;
+                suitcasePercentageEl.style.width = `${suitcasePercent}%`;
+                grinderPercentageEl.style.width = `${grinderPercent}%`;
+                
+                trashPercentEl.textContent = trashPercent;
+                suitcasePercentEl.textContent = suitcasePercent;
+                grinderPercentEl.textContent = grinderPercent;
+            }
+            
+            function vote(zone) {
+                votes[zone]++;
+                const zoneElement = document.getElementById(`${zone}Zone`);
+                zoneElement.classList.add('clicked');
+                const voteElement = document.getElementById(`${zone}Votes`);
+                voteElement.classList.add('increasing');
+                updateDisplay();
+                saveVotes();
+                setTimeout(() => {
+                    zoneElement.classList.remove('clicked');
+                    voteElement.classList.remove('increasing');
+                }, 800);
+            }
+            
+            trashZone.addEventListener('click', () => vote('trash'));
+            suitcaseZone.addEventListener('click', () => vote('suitcase'));
+            grinderZone.addEventListener('click', () => vote('grinder'));
+            
+            resetBtn.addEventListener('click', function() {
+                votes = { trash: 0, suitcase: 0, grinder: 0 };
+                updateDisplay();
+                localStorage.removeItem('feedbackVotes');
+            });
+            
+            loadVotes();
+        });
+    </script>
+</body>
+</html>
+
+

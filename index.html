@@ -1,172 +1,143 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#1a1a2e">
-    <title>База нейросетей для учителя</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-</head>
-<body>
-    <!-- Навигация -->
-    <nav class="nav-bar" role="navigation" aria-label="Основная навигация">
-        <button class="nav-btn active" data-tab="tools" aria-label="Нейросети для учителя">
-            <span class="nav-icon">🤖</span>
-            <span class="nav-text">Нейросети</span>
-        </button>
-        <button class="nav-btn" data-tab="prompts" aria-label="Промпты для учителя">
-            <span class="nav-icon">💬</span>
-            <span class="nav-text">Промпты</span>
-        </button>
-        <button class="nav-btn" data-tab="cases" aria-label="Примеры использования">
-            <span class="nav-icon">📚</span>
-            <span class="nav-text">Примеры</span>
-        </button>
-    </nav>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <meta
+      name="description"
+      content="Одностраничный бенчмарк: сравнение нейросетей по генерации образовательного контента на 8 кейсах."
+    />
+    <title>Нейросети для Образования — Реальный Бенчмарк Контента</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Перейти к содержимому</a>
 
-    <!-- Заголовок и поиск -->
-    <header class="header">
-        <h1 class="header-title">База нейросетей для учителя</h1>
-        <div class="search-container">
-            <input type="text" id="search-input" class="search-input" placeholder="Поиск..." aria-label="Поиск по базе">
-            <button class="search-clear" id="search-clear" aria-label="Очистить поиск" style="display: none;">✕</button>
+    <header class="app-header" role="banner">
+      <div class="container header-row">
+        <div class="brand" aria-label="Название проекта">
+          <span class="brand-mark" aria-hidden="true">
+            <!-- simple inline mark -->
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 1.5c4.7 0 8.5 3.8 8.5 8.5S14.7 18.5 10 18.5 1.5 14.7 1.5 10 5.3 1.5 10 1.5Z" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M6 10.2 8.7 12.9 14.2 7.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="brand-text">
+            <span class="brand-title">EduBench</span>
+            <span class="brand-subtitle">Сравнение нейросетей для образовательного контента</span>
+          </span>
         </div>
-        <div class="filter-container" id="filter-container"></div>
+
+        <nav class="top-actions" aria-label="Быстрая навигация">
+          <a class="link" href="#nets">Нейросети</a>
+          <a class="link" href="#tabs">Бенчмарк</a>
+        </nav>
+      </div>
     </header>
 
-    <!-- Основной контент -->
-    <main class="main-content" id="main-content" role="main">
-        <!-- Вкладка: Нейросети -->
-        <section class="tab-content active" id="tools-tab" aria-labelledby="tools-tab">
-            <div class="cards-grid" id="tools-grid"></div>
-        </section>
+    <main id="main" class="app-main" role="main">
+      <section class="hero">
+        <div class="container hero-grid">
+          <div class="hero-copy">
+            <h1 class="h1">Нейросети для Образования: Реальный Бенчмарк Контента</h1>
+            <p class="muted">
+              <strong>Бенчмарк</strong> — это стандартизированное сравнение результатов разных решений на одинаковых задачах и по одним правилам.
+            </p>
+            <p class="lead">
+              Цель проекта — сравнить, как разные нейросети генерируют контент для образовательных кейсов (объяснения, задания, планы уроков, тесты и т.д.)
+              при одинаковых промптах и условиях.
+            </p>
+            <div class="hero-cta">
+              <button class="btn btn-primary" type="button" data-nav="benchmark">
+                Перейти к бенчмарку
+              </button>
+            </div>
+          </div>
 
-        <!-- Вкладка: Промпты -->
-        <section class="tab-content" id="prompts-tab" aria-labelledby="prompts-tab">
-            <div class="cards-grid" id="prompts-grid"></div>
-        </section>
+          <aside class="hero-panel" aria-label="Сводка">
+            <div class="panel">
+              <div class="panel-title">Что сравниваем</div>
+              <ul class="panel-list">
+                <li>Качество структуры и ясность</li>
+                <li>Педагогическая корректность</li>
+                <li>Полезность примеров и заданий</li>
+                <li>Оформление/UX результата (если кейс про интерфейс)</li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </section>
 
-        <!-- Вкладка: Примеры -->
-        <section class="tab-content" id="cases-tab" aria-labelledby="cases-tab">
-            <div class="cards-grid" id="cases-grid"></div>
-        </section>
+      <section id="nets" class="section">
+        <div class="container">
+          <div class="section-head">
+            <h2 class="h2">Сравниваемые нейросети</h2>
+          </div>
+          <div id="netsGrid" class="grid" aria-label="Список нейросетей"></div>
+        </div>
+      </section>
+
+      <section id="tabs" class="section section-tabs">
+        <div class="container">
+          <section
+            id="panel-benchmark"
+            class="tab-panel is-active"
+            tabindex="0"
+          >
+            <div class="section-head">
+              <h2 class="h2">Сравнение Результатов: 8 Образовательных Кейсов</h2>
+              <p class="muted">
+                Выберите кейс слева и переключайте нейросети внутри кейса. Сразу под описанием кейса показан исходный промпт.
+              </p>
+            </div>
+
+            <div class="benchmark-layout">
+              <aside class="case-nav" aria-label="Навигация по кейсам">
+                <div class="case-nav-head">
+                  <div class="case-nav-title">Кейсы</div>
+                </div>
+                <div class="case-nav-search">
+                  <input
+                    id="caseSearch"
+                    class="input"
+                    type="search"
+                    placeholder="Поиск по кейсам и промптам…"
+                    autocomplete="off"
+                    spellcheck="false"
+                  />
+                </div>
+                <div id="caseList" class="case-list" role="list"></div>
+              </aside>
+
+              <div class="case-stage" aria-label="Выбранный кейс">
+                <div id="caseView" class="case-view">
+                  <!-- JS renders selected case here -->
+                  <div class="skeleton">
+                    <div class="skeleton-line w-60"></div>
+                    <div class="skeleton-line w-90"></div>
+                    <div class="skeleton-line w-75"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
     </main>
 
-    <!-- Модальное окно для промпта -->
-    <div class="modal" id="prompt-modal" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modal-title" class="modal-title"></h2>
-                <button class="modal-close" id="modal-close" aria-label="Закрыть">✕</button>
-            </div>
-            <div class="modal-body" id="modal-body"></div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" id="copy-prompt-btn">Скопировать промпт</button>
-                <button class="btn btn-secondary" id="copy-template-btn">Копировать как шаблон</button>
-                <button class="btn btn-icon" id="favorite-prompt-btn" aria-label="Добавить в закладки">⭐</button>
-            </div>
+    <footer class="app-footer" role="contentinfo">
+      <div class="container footer-row">
+        <div class="muted">
+          <strong>EduBench</strong>
         </div>
-    </div>
+        <div class="muted">© <span id="year"></span></div>
+      </div>
+    </footer>
 
-    <!-- Модальное окно для карточки инструмента -->
-    <div class="modal" id="tool-modal" role="dialog" aria-labelledby="tool-modal-title" aria-hidden="true">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="tool-modal-title" class="modal-title"></h2>
-                <button class="modal-close" id="tool-modal-close" aria-label="Закрыть">✕</button>
-            </div>
-            <div class="modal-body" id="tool-modal-body"></div>
-            <div class="modal-footer">
-                <a class="btn btn-primary" id="tool-link-btn" target="_blank" rel="noopener noreferrer">Открыть сайт</a>
-                <button class="btn btn-icon" id="favorite-tool-btn" aria-label="Добавить в закладки">⭐</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Модальное окно для кейса -->
-    <div class="modal" id="case-modal" role="dialog" aria-labelledby="case-modal-title" aria-hidden="true">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="case-modal-title" class="modal-title"></h2>
-                <button class="modal-close" id="case-modal-close" aria-label="Закрыть">✕</button>
-            </div>
-            <div class="modal-body" id="case-modal-body"></div>
-            <div class="modal-footer">
-                <button class="btn btn-icon" id="favorite-case-btn" aria-label="Добавить в закладки">⭐</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast уведомления -->
-    <div class="toast" id="toast" role="alert" aria-live="polite"></div>
-
-    <!-- Кнопка настроек (плавающая) -->
-    <button class="fab" id="settings-btn" aria-label="Настройки">⚙️</button>
-
-    <!-- Панель настроек -->
-    <div class="settings-panel" id="settings-panel" aria-hidden="true">
-        <div class="settings-content">
-            <div class="settings-header">
-                <h2>Настройки</h2>
-                <button class="settings-close" id="settings-close" aria-label="Закрыть настройки">✕</button>
-            </div>
-            <div class="settings-body">
-                <div class="setting-item">
-                    <label for="theme-select">Тема:</label>
-                    <select id="theme-select" class="setting-select">
-                        <option value="dark">Тёмная</option>
-                        <option value="light">Светлая</option>
-                        <option value="auto">Авто</option>
-                    </select>
-                </div>
-                <div class="setting-item">
-                    <label for="font-size-select">Размер шрифта:</label>
-                    <select id="font-size-select" class="setting-select">
-                        <option value="small">Маленький</option>
-                        <option value="medium" selected>Средний</option>
-                        <option value="large">Большой</option>
-                    </select>
-                </div>
-                <div class="setting-item">
-                    <label for="button-size-select">Размер кнопок:</label>
-                    <select id="button-size-select" class="setting-select">
-                        <option value="small">Маленький</option>
-                        <option value="medium" selected>Средний</option>
-                        <option value="large">Большой</option>
-                    </select>
-                </div>
-                <div class="setting-actions">
-                    <button class="btn btn-primary" id="export-btn">Экспорт данных</button>
-                    <button class="btn btn-secondary" id="import-btn">Импорт данных</button>
-                    <input type="file" id="import-file" accept=".json,.csv" style="display: none;">
-                </div>
-                <div class="setting-actions">
-                    <button class="btn btn-secondary" id="clear-cache-btn">Очистить кэш</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Индикатор оффлайн -->
-    <div class="offline-indicator" id="offline-indicator" style="display: none;">
-        <span>📴 Оффлайн: используется кэш</span>
-    </div>
-
-    <script src="app.js"></script>
-    <!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
-        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=105445813', 'ym');
-
-    ym(105445813, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true});
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/105445813" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
-</body>
+    <script src="./script.js" defer></script>
+  </body>
 </html>
+
 

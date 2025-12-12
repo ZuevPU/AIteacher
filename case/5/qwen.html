@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Интерактивная Модель Клетки</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .cell-container {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #e0f7fa 0%, #b2ebf2 100%);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .organelle {
+      position: absolute;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.3s ease, z-index 0.3s ease;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    .organelle-label {
+      position: absolute;
+      bottom: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      font-weight: bold;
+      color: #333;
+      white-space: nowrap;
+    }
+
+    .organelle:hover {
+      transform: scale(1.2);
+      z-index: 10;
+    }
+
+    .tooltip {
+      position: absolute;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.85);
+      color: white;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      z-index: 20;
+    }
+
+    .organelle:hover .tooltip {
+      opacity: 1;
+    }
+
+    .cytoplasm {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+
+    .nucleus {
+      width: 80px;
+      height: 80px;
+      background: #ffab91;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .mitochondria {
+      width: 50px;
+      height: 25px;
+      background: #a5d6a7;
+      top: 70%;
+      left: 30%;
+      transform: translate(-50%, -50%) rotate(20deg);
+      border-radius: 50px;
+    }
+
+    .mitochondria::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 6px;
+      background: #81c784;
+      border-radius: 3px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .rough-er {
+      width: 100px;
+      height: 40px;
+      background: #d1c4e9;
+      top: 25%;
+      left: 75%;
+      transform: translate(-50%, -50%) rotate(-15deg);
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 10px;
+    }
+
+    .rough-er::before,
+    .rough-er::after {
+      content: '';
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: #9575cd;
+      border-radius: 50%;
+    }
+
+    .rough-er::before {
+      top: -6px;
+      left: 15px;
+    }
+
+    .rough-er::after {
+      bottom: -6px;
+      right: 15px;
+    }
+
+    .smooth-er {
+      position: absolute;
+      width: 80px;
+      height: 30px;
+      background: #ffcc80;
+      top: 60%;
+      left: 70%;
+      transform: translate(-50%, -50%) rotate(10deg);
+      border-radius: 15px;
+    }
+
+    @media (max-width: 360px) {
+      .cell-container { width: 250px; height: 250px; }
+      .nucleus { width: 70px; height: 70px; }
+      .mitochondria { width: 40px; height: 20px; }
+      .rough-er { width: 80px; height: 35px; }
+      .smooth-er { width: 70px; height: 25px; }
+    }
+
+    @media (min-width: 600px) {
+      .cell-container { width: 400px; height: 400px; }
+      .nucleus { width: 110px; height: 110px; top: 35%; }
+      .mitochondria { width: 70px; height: 35px; top: 75%; left: 25%; }
+      .rough-er { width: 130px; height: 50px; top: 25%; left: 78%; }
+      .smooth-er { width: 100px; height: 40px; top: 65%; left: 72%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="cell-container">
+    <div class="organelle cytoplasm">
+      <div class="organelle-label">Цитоплазма</div>
+      <div class="tooltip">Цитоплазма: гелеобразная среда, заполняющая клетку и содержащая все органеллы.</div>
+    </div>
+
+    <div class="organelle nucleus">
+      <div class="organelle-label">Ядро</div>
+      <div class="tooltip">Ядро: центр управления клеткой, хранит генетическую информацию (ДНК).</div>
+    </div>
+
+    <div class="organelle mitochondria">
+      <div class="organelle-label">Митохондрии</div>
+      <div class="tooltip">Митохондрии: энергетическая станция клетки, производит АТФ.</div>
+    </div>
+
+    <div class="organelle rough-er">
+      <div class="organelle-label">ЭПС (шероховатая)</div>
+      <div class="tooltip">ЭПС: синтез и транспортировка белков и липидов.</div>
+    </div>
+
+    <div class="organelle smooth-er">
+      <div class="organelle-label">ЭПС (гладкая)</div>
+      <div class="tooltip">Гладкая ЭПС: синтез липидов и детоксикация.</div>
+    </div>
+  </div>
+</body>
+</html>
+
+

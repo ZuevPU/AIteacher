@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Диаграмма Венна: Онегин и Ленский</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: white;
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 20px;
+        }
+        
+        .instructions {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .instructions h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .instructions p {
+            color: #7f8c8d;
+            text-align: center;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .venn-container {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+            height: 500px;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        
+        .venn-diagram {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .circle-onegin {
+            width: 300px;
+            height: 300px;
+            background-color: rgba(231, 76, 60, 0.7);
+            left: 25%;
+            transform: translateX(-50%);
+            border: 3px solid #e74c3c;
+        }
+        
+        .circle-lensky {
+            width: 300px;
+            height: 300px;
+            background-color: rgba(52, 152, 219, 0.7);
+            right: 25%;
+            transform: translateX(50%);
+            border: 3px solid #3498db;
+        }
+        
+        .intersection {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background-color: rgba(46, 204, 113, 0.7);
+            border: 3px solid #2ecc71;
+            z-index: 1;
+        }
+        
+        .character-name {
+            position: absolute;
+            top: 20px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c3e50;
+            z-index: 10;
+        }
+        
+        .onegin-name { left: 15%; }
+        .lensky-name { right: 15%; }
+        
+        .drop-zone {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            z-index: 5;
+        }
+        
+        .drop-zone-onegin {
+            left: 25%;
+            transform: translateX(-50%);
+        }
+        
+        .drop-zone-lensky {
+            right: 25%;
+            transform: translateX(50%);
+        }
+        
+        .drop-zone-intersection {
+            width: 200px;
+            height: 200px;
+            z-index: 6;
+        }
+        
+        .traits-container {
+            flex: 1;
+            min-width: 300px;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        
+        .traits-title {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .traits-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .trait {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            cursor: grab;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border: 2px dashed #bdc3c7;
+            text-align: center;
+            font-size: 1.1rem;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        
+        .trait:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+        
+        .trait.dragging {
+            opacity: 0.7;
+            cursor: grabbing;
+        }
+        
+        .trait.placed {
+            cursor: default;
+            opacity: 0.9;
+        }
+        
+        .trait.correct {
+            background-color: #d4edda;
+            border-color: #28a745;
+            border-style: solid;
+            color: #155724;
+        }
+        
+        .trait.placed-in-zone {
+            position: absolute;
+            width: auto;
+            max-width: 180px;
+            text-align: center;
+            z-index: 20;
+            pointer-events: none;
+        }
+        
+        .feedback {
+            text-align: center;
+            margin-top: 20px;
+            min-height: 50px;
+            padding: 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .feedback.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .feedback.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .reset-btn {
+            display: block;
+            margin: 30px auto;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .reset-btn:hover {
+            background-color: #5a6268;
+            transform: translateY(-3px);
+        }
+        
+        .completion-message {
+            display: none;
+            text-align: center;
+            background-color: #d4edda;
+            color: #155724;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        
+        .completion-message h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        
+        .character-info {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .character-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 15px;
+            width: 250px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .character-card h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 1.3rem;
+        }
+        
+        .character-card p {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 1024px) {
+            .circle-onegin, .circle-lensky, .intersection { width: 250px; height: 250px; }
+            .drop-zone-onegin, .drop-zone-lensky { width: 250px; height: 250px; }
+            .venn-container { height: 450px; }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content { flex-direction: column; }
+            .venn-container { height: 400px; }
+            .circle-onegin, .circle-lensky, .intersection { width: 200px; height: 200px; }
+            .drop-zone-onegin, .drop-zone-lensky { width: 200px; height: 200px; }
+            .onegin-name { left: 10%; }
+            .lensky-name { right: 10%; }
+            .character-name { font-size: 1.5rem; }
+            h1 { font-size: 2rem; }
+        }
+        
+        @media (max-width: 480px) {
+            .venn-container { height: 350px; }
+            .circle-onegin, .circle-lensky, .intersection { width: 160px; height: 160px; }
+            .drop-zone-onegin, .drop-zone-lensky { width: 160px; height: 160px; }
+            .drop-zone-intersection { width: 120px; height: 120px; }
+            .onegin-name { left: 5%; }
+            .lensky-name { right: 5%; }
+            .character-name { font-size: 1.2rem; }
+            h1 { font-size: 1.8rem; }
+            .traits-container { padding: 20px; }
+            .trait { padding: 15px; font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Диаграмма Венна: Онегин и Ленский</h1>
+            <p class="subtitle">Сравнение персонажей романа "Евгений Онегин" А.С. Пушкина</p>
+        </header>
+        
+        <div class="instructions">
+            <h3>Как работать с диаграммой:</h3>
+            <p>Перетащите черты характера в соответствующие зоны диаграммы: левый круг - черты Онегина, правый круг - черты Ленского, пересечение - общие черты.</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="venn-container">
+                <div class="venn-diagram">
+                    <div class="circle circle-onegin"></div>
+                    <div class="circle circle-lensky"></div>
+                    <div class="circle intersection"></div>
+                    
+                    <div class="character-name onegin-name">Евгений Онегин</div>
+                    <div class="character-name lensky-name">Владимир Ленский</div>
+                    
+                    <div class="drop-zone drop-zone-onegin" data-zone="onegin"></div>
+                    <div class="drop-zone drop-zone-lensky" data-zone="lensky"></div>
+                    <div class="drop-zone drop-zone-intersection" data-zone="intersection"></div>
+                </div>
+            </div>
+            
+            <div class="traits-container">
+                <h3 class="traits-title">Черты характера</h3>
+                <div class="traits-list" id="traitsList">
+                    <div class="trait" data-correct-zone="intersection" id="trait1" draggable="true">Романтик</div>
+                    <div class="trait" data-correct-zone="onegin" id="trait2" draggable="true">Разочарованный в жизни</div>
+                    <div class="trait" data-correct-zone="lensky" id="trait3" draggable="true">Идеалист</div>
+                    <div class="trait" data-correct-zone="intersection" id="trait4" draggable="true">Образованный</div>
+                    <div class="trait" data-correct-zone="onegin" id="trait5" draggable="true">Циник</div>
+                    <div class="trait" data-correct-zone="lensky" id="trait6" draggable="true">Пылкий и эмоциональный</div>
+                    <div class="trait" data-correct-zone="intersection" id="trait7" draggable="true">Молодой дворянин</div>
+                    <div class="trait" data-correct-zone="onegin" id="trait8" draggable="true">Скучающий (сплин)</div>
+                    <div class="trait" data-correct-zone="lensky" id="trait9" draggable="true">Верящий в дружбу и любовь</div>
+                </div>
+                
+                <div class="feedback" id="feedback"></div>
+            </div>
+        </div>
+        
+        <button class="reset-btn" id="resetBtn">Сбросить и начать заново</button>
+        
+        <div class="completion-message" id="completionMessage">
+            <h3>Поздравляем! Вы успешно разместили все черты характера!</h3>
+            <p>Теперь вы видите сходства и различия между Онегиным и Ленским</p>
+        </div>
+        
+        <div class="character-info">
+            <div class="character-card">
+                <h4>Евгений Онегин</h4>
+                <p>Молодой петербургский аристократ, разочарованный в жизни, скучающий циник. Образованный, но не нашедший применения своим способностям. Страдает от "русской хандры" (сплина).</p>
+            </div>
+            
+            <div class="character-card">
+                <h4>Владимир Ленский</h4>
+                <p>Молодой поэт-романтик, идеалист, полный энтузиазма и веры в дружбу, любовь и высокие идеалы. Эмоциональный и пылкий, контрастирует с холодным Онегиным.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const traitsList = document.getElementById('traitsList');
+            const feedback = document.getElementById('feedback');
+            const resetBtn = document.getElementById('resetBtn');
+            const completionMessage = document.getElementById('completionMessage');
+            const dropZones = document.querySelectorAll('.drop-zone');
+            
+            let placedCount = 0;
+            
+            function updateCompletion() {
+                if (placedCount >= 9) {
+                    completionMessage.style.display = 'block';
+                    feedback.textContent = 'Отлично! Вы правильно распределили все черты характера!';
+                    feedback.className = 'feedback success';
+                }
+            }
+            
+            traitsList.querySelectorAll('.trait').forEach((trait) => {
+                trait.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', trait.id);
+                    trait.classList.add('dragging');
+                });
+                trait.addEventListener('dragend', () => trait.classList.remove('dragging'));
+            });
+            
+            dropZones.forEach((zone) => {
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    zone.style.border = '2px dashed #2ecc71';
+                });
+                zone.addEventListener('dragleave', () => { zone.style.border = ''; });
+                zone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    zone.style.border = '';
+                    const id = e.dataTransfer.getData('text/plain');
+                    const trait = document.getElementById(id);
+                    if (!trait || trait.classList.contains('placed')) return;
+                    
+                    const required = trait.getAttribute('data-correct-zone');
+                    const current = zone.getAttribute('data-zone');
+                    
+                    if (required === current) {
+                        trait.classList.add('placed', 'correct');
+                        trait.setAttribute('draggable', 'false');
+                        feedback.textContent = 'Правильно!';
+                        feedback.className = 'feedback success';
+                        placedCount += 1;
+                        updateCompletion();
+                    } else {
+                        feedback.textContent = 'Неверная зона. Попробуйте ещё раз.';
+                        feedback.className = 'feedback error';
+                    }
+                });
+            });
+            
+            resetBtn.addEventListener('click', () => location.reload());
+        });
+    </script>
+</body>
+</html>
+
+

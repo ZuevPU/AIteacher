@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Анкета-Опросник</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+}
+
+form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+input[type="radio"] {
+    display: none;
+}
+
+.label-text {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+input[type="radio"]:checked + .label-text {
+    background-color: #007bff;
+    color: white;
+}
+
+.submit-button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.submit-button:hover {
+    background-color: #0056b3;
+}
+
+.radar-chart {
+    width: 400px;
+    height: 400px;
+    margin: 40px auto;
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.radar-line {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    stroke: #007bff;
+    fill: none;
+    stroke-width: 2px;
+}
+
+.axis-label {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+    color: #007bff;
+}
+
+@media screen and (max-width: 600px) {
+    form {max-width: 100%;}
+    label {margin-bottom: 5px;}
+    input[type="radio"] + .label-text {padding: 5px 10px;}
+    .submit-button {padding: 5px 10px;}
+    .radar-chart {width: 300px; height: 300px;}
+}
+</style>
+</head>
+<body>
+<h1>Анкета-опросник</h1>
+<form id="survey-form">
+    <label>
+        Чувствую ли я себя в безопасности в классе?
+        <br><input type="radio" name="q1" value="1"><span class="label-text">Полностью не согласен</span>
+        <input type="radio" name="q1" value="2"><span class="label-text">Скорее не согласен</span>
+        <input type="radio" name="q1" value="3"><span class="label-text">Нейтрально</span>
+        <input type="radio" name="q1" value="4"><span class="label-text">Скорее согласен</span>
+        <input type="radio" name="q1" value="5"><span class="label-text">Полностью согласен</span>
+    </label>
+    <!-- Остальные вопросы -->
+    <button type="submit" class="submit-button">Отправить</button>
+</form>
+<div class="radar-chart" id="radar-chart"></div>
+
+<script>
+document.getElementById("survey-form").addEventListener("submit", function(event) {
+    event.preventDefault();
+    const results = Array.from(document.querySelectorAll('input[name^="q"]')).map(input => parseInt(input.value));
+    renderRadarChart(results);
+});
+
+function renderRadarChart(results) {
+    const radarChart = document.getElementById("radar-chart");
+    while(radarChart.firstChild) radarChart.removeChild(radarChart.firstChild);
+
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS, "svg");
+    svg.setAttribute("viewBox", "-100 -100 200 200");
+    radarChart.appendChild(svg);
+
+    const path = document.createElementNS(svgNS, "path");
+    path.setAttribute("class", "radar-line");
+    path.setAttribute("d", generatePolygonPoints(results));
+    svg.appendChild(path);
+
+    const labels = ["Безопасность", "Комфорт", "Поддержка", "Обучение", "Интерес"];
+    labels.forEach((label, index) => {
+        const angle = (index * 72) % 360;
+        const x = Math.cos(angle * Math.PI / 180) * 90;
+        const y = Math.sin(angle * Math.PI / 180) * 90;
+        const axisLabel = document.createElementNS(svgNS, "text");
+        axisLabel.setAttribute("class", "axis-label");
+        axisLabel.setAttribute("x", x);
+        axisLabel.setAttribute("y", y);
+        axisLabel.textContent = label;
+        svg.appendChild(axisLabel);
+    });
+}
+
+function generatePolygonPoints(values) {
+    const points = values.map((value, index) => {
+        const angle = (index * 72) % 360;
+        const radius = value * 10;
+        const x = Math.cos(angle * Math.PI / 180) * radius;
+        const y = Math.sin(angle * Math.PI / 180) * radius;
+        return `${x},${y}`;
+    }).join(" ");
+    return `M ${points}`;
+}
+</script>
+</body>
+</html>
+
+

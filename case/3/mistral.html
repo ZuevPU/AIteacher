@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аналоговые Часы</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        .clock {
+            width: 200px;
+            height: 200px;
+            border: 10px solid #333;
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .clock-face {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            border-radius: 50%;
+            background-color: white;
+        }
+        .number {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            pointer-events: none;
+        }
+        .number.roman {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+        .number span {
+            display: inline-block;
+            position: relative;
+        }
+        .number span:nth-child(1) { transform: translateY(-80px); }
+        .number span:nth-child(2) { transform: translate(-60px, -60px); }
+        .number span:nth-child(3) { transform: translateX(-80px); }
+        .number span:nth-child(4) { transform: translate(-60px, 60px); }
+        .number span:nth-child(5) { transform: translateY(80px); }
+        .number span:nth-child(6) { transform: translate(60px, 60px); }
+        .number span:nth-child(7) { transform: translateX(80px); }
+        .number span:nth-child(8) { transform: translate(60px, -60px); }
+        .number span:nth-child(9) { transform: translateY(-40px); }
+        .number span:nth-child(10) { transform: translate(-30px, -30px); }
+        .number span:nth-child(11) { transform: translateY(0); }
+        .number span:nth-child(12) { transform: translate(30px, -30px); }
+        .hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: 50% 100%;
+            background-color: #333;
+            border-radius: 5px;
+        }
+        .hour-hand {
+            width: 6px;
+            height: 50px;
+            margin-left: -3px;
+            transform: translateY(50%) rotate(277.5deg);
+        }
+        .minute-hand {
+            width: 4px;
+            height: 70px;
+            margin-left: -2px;
+            transform: translateY(50%) rotate(144deg);
+        }
+        .second-hand {
+            width: 2px;
+            height: 80px;
+            margin-left: -1px;
+            background-color: #e74c3c;
+            transform: translateY(50%) rotate(6deg);
+            animation: moveSecondHand 60s linear infinite;
+        }
+        @keyframes moveSecondHand {
+            from { transform: translateY(50%) rotate(6deg); }
+            to { transform: translateY(50%) rotate(366deg); }
+        }
+        .center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 12px;
+            height: 12px;
+            margin: -6px 0 0 -6px;
+            background-color: #e74c3c;
+            border-radius: 50%;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="clock">
+        <div class="clock-face">
+            <div class="number roman">
+                <span>I</span>
+                <span>II</span>
+                <span>III</span>
+                <span>IV</span>
+                <span>V</span>
+                <span>VI</span>
+                <span>VII</span>
+                <span>VIII</span>
+                <span>IX</span>
+                <span>X</span>
+                <span>XI</span>
+                <span>XII</span>
+            </div>
+            <div class="hour-hand"></div>
+            <div class="minute-hand"></div>
+            <div class="second-hand"></div>
+            <div class="center-circle"></div>
+        </div>
+    </div>
+</body>
+</html>
+
+

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Диаграмма Венна для сравнения персонажей</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .venn-container {
+            position: relative;
+            width: 500px;
+            height: 300px;
+            margin: 30px auto;
+        }
+
+        .circle {
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            opacity: 0.7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .left-circle {
+            background-color: #3498db;
+            left: 0;
+            z-index: 1;
+        }
+
+        .right-circle {
+            background-color: #e74c3c;
+            right: 0;
+            z-index: 1;
+        }
+
+        .intersection {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 220px;
+            background-color: rgba(149, 59, 186, 0.5);
+            border-radius: 110px / 60px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .draggable {
+            position: absolute;
+            padding: 10px 15px;
+            background-color: #f1c40f;
+            border-radius: 5px;
+            cursor: move;
+            user-select: none;
+            z-index: 10;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s;
+        }
+
+        .draggable.highlight {
+            background-color: #2ecc71;
+        }
+
+        .drop-zone {
+            position: absolute;
+            z-index: 5;
+        }
+
+        .drop-zone.left {
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+        }
+
+        .drop-zone.right {
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+        }
+
+        .drop-zone.intersection {
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 180px;
+            border-radius: 50px / 90px;
+        }
+
+        .character-label {
+            position: absolute;
+            font-weight: bold;
+            color: #333;
+            z-index: 10;
+        }
+
+        .left-label {
+            left: 20px;
+            top: 10px;
+        }
+
+        .right-label {
+            right: 20px;
+            top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Сравнение Онегина и Ленского</h2>
+    <div class="venn-container">
+        <div class="circle left-circle">Онегин</div>
+        <div class="circle right-circle">Ленский</div>
+        <div class="intersection"></div>
+
+        <div class="character-label left-label">Онегин</div>
+        <div class="character-label right-label">Ленский</div>
+
+        <div class="drop-zone left" data-zone="onegin"></div>
+        <div class="drop-zone right" data-zone="lensky"></div>
+        <div class="drop-zone intersection" data-zone="common"></div>
+
+        <div class="draggable" draggable="true" data-target="onegin" style="top: 350px; left: 100px;">
+            Скептицизм
+        </div>
+
+        <div class="draggable" draggable="true" data-target="lensky" style="top: 350px; left: 300px;">
+            Романтизм
+        </div>
+
+        <div class="draggable" draggable="true" data-target="common" style="top: 350px; left: 200px;">
+            Дворянское происхождение
+        </div>
+    </div>
+
+    <script>
+        const draggables = document.querySelectorAll('.draggable');
+        const dropZones = document.querySelectorAll('.drop-zone');
+
+        draggables.forEach(draggable => {
+            draggable.addEventListener('dragstart', () => {
+                draggable.classList.add('dragging');
+            });
+
+            draggable.addEventListener('dragend', () => {
+                draggable.classList.remove('dragging');
+            });
+        });
+
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const draggable = document.querySelector('.dragging');
+                const targetZone = draggable.getAttribute('data-target');
+                const zoneType = zone.getAttribute('data-zone');
+
+                if (targetZone === zoneType) {
+                    zone.appendChild(draggable);
+                    draggable.style.position = 'relative';
+                    draggable.style.top = '0';
+                    draggable.style.left = '0';
+                    draggable.style.transform = 'translate(0, 0)';
+                    draggable.classList.add('highlight');
+                    draggable.draggable = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+

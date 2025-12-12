@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интерактивная модель животной клетки</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .cell-container {
+            width: 100%;
+            max-width: 800px;
+            height: 600px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .cytoplasm {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+            border-radius: 20px;
+        }
+
+        .organelle {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            z-index: 1;
+        }
+
+        .organelle::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            font-size: 12px;
+            max-width: 200px;
+            text-align: center;
+        }
+
+        .organelle:hover {
+            transform: scale(1.3);
+            z-index: 2;
+        }
+
+        .organelle:hover::after {
+            opacity: 1;
+            visibility: visible;
+            top: calc(100% + 10px);
+        }
+
+        .nucleus {
+            width: 120px;
+            height: 120px;
+            background-color: #d84315;
+            left: 30%;
+            top: 35%;
+        }
+
+        .nucleus::after {
+            content: "Ядро: центр управления клеткой, содержит ДНК";
+        }
+
+        .mitochondria {
+            width: 60px;
+            height: 60px;
+            background-color: #1b5e20;
+            left: 65%;
+            top: 25%;
+        }
+
+        .mitochondria::after {
+            content: "Митохондрии: энергетическая станция клетки, производят АТФ";
+        }
+
+        .er {
+            width: 90px;
+            height: 90px;
+            background-color: #0d47a1;
+            left: 40%;
+            top: 65%;
+            clip-path: path('M10,10 h70 v70 h-70 z M20,20 h50 v50 h-50 z');
+        }
+
+        .er::after {
+            content: "Эндоплазматическая сеть: участвует в синтезе белков и липидов";
+        }
+
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+
+        @media (max-width: 768px) {
+            .cell-container {
+                height: 500px;
+            }
+
+            .organelle {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .cell-container {
+                height: 400px;
+            }
+
+            .legend {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cell-container">
+        <div class="cytoplasm"></div>
+        <div class="organelle nucleus" title="Ядро"></div>
+        <div class="organelle mitochondria" title="Митохондрии"></div>
+        <div class="organelle er" title="Эндоплазматическая сеть"></div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #d84315;"></div>
+                <span>Ядро</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #1b5e20;"></div>
+                <span>Митохондрии</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #0d47a1;"></div>
+                <span>Эндоплазматическая сеть</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const organelles = document.querySelectorAll('.organelle');
+
+        organelles.forEach(organelle => {
+            organelle.addEventListener('click', () => {
+                console.log(`Выбран органоид: ${organelle.title}`);
+            });
+        });
+    </script>
+</body>
+</html>
+
+

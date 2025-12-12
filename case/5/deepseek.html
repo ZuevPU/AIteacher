@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интерактивная модель клетки</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: white;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .cell-container {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+            height: 500px;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        
+        .cell-membrane {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border: 3px solid #3498db;
+            border-radius: 50%;
+        }
+        
+        .organelle {
+            position: absolute;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            font-size: 0.9rem;
+            padding: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .organelle:hover {
+            transform: scale(1.2);
+            z-index: 100;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .nucleus {
+            width: 120px;
+            height: 120px;
+            background-color: #e74c3c;
+            top: 50%;
+            left: 30%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .mitochondria {
+            width: 80px;
+            height: 80px;
+            background-color: #2ecc71;
+            top: 30%;
+            left: 70%;
+        }
+        
+        .mitochondria-2 {
+            width: 70px;
+            height: 70px;
+            background-color: #27ae60;
+            top: 65%;
+            left: 75%;
+        }
+        
+        .endoplasmic-reticulum {
+            width: 140px;
+            height: 100px;
+            background-color: #9b59b6;
+            border-radius: 10px;
+            top: 60%;
+            left: 30%;
+            transform: translateX(-50%);
+        }
+        
+        .golgi-apparatus {
+            width: 90px;
+            height: 60px;
+            background-color: #f39c12;
+            border-radius: 5px;
+            top: 25%;
+            left: 50%;
+        }
+        
+        .ribosomes {
+            width: 60px;
+            height: 60px;
+            background-color: #1abc9c;
+            top: 40%;
+            left: 20%;
+        }
+        
+        .lysosome {
+            width: 50px;
+            height: 50px;
+            background-color: #e67e22;
+            top: 70%;
+            left: 50%;
+        }
+        
+        .cytoplasm {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            background-color: rgba(52, 152, 219, 0.05);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        
+        .info-panel {
+            flex: 1;
+            min-width: 300px;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        
+        .info-title {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .info-content {
+            background-color: white;
+            border-radius: 15px;
+            padding: 25px;
+            height: 300px;
+            overflow-y: auto;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .organelle-info {
+            display: none;
+        }
+        
+        .organelle-info.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .organelle-name {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+        
+        .organelle-description {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+        
+        .organelle-function {
+            color: #3498db;
+            font-weight: bold;
+            margin: 15px 0;
+            font-size: 1.1rem;
+        }
+        
+        .default-message {
+            text-align: center;
+            color: #95a5a6;
+            font-size: 1.2rem;
+            padding: 50px 20px;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+        
+        .legend-text {
+            font-size: 0.9rem;
+            color: #2c3e50;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .cell-container {
+                height: 400px;
+            }
+            
+            .organelle {
+                font-size: 0.8rem;
+            }
+            
+            .nucleus {
+                width: 90px;
+                height: 90px;
+            }
+            
+            .mitochondria, .mitochondria-2 {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .endoplasmic-reticulum {
+                width: 100px;
+                height: 70px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .info-panel {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .cell-container {
+                height: 350px;
+            }
+            
+            .organelle {
+                font-size: 0.7rem;
+                padding: 5px;
+            }
+            
+            .nucleus {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .mitochondria, .mitochondria-2 {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .endoplasmic-reticulum {
+                width: 80px;
+                height: 60px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .legend {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Интерактивная модель животной клетки</h1>
+            <p class="subtitle">Наведите курсор на органеллы клетки, чтобы узнать об их функциях</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="cell-container">
+                <div class="cell-membrane"></div>
+                <div class="cytoplasm"></div>
+                
+                <div class="organelle nucleus" data-organelle="nucleus">Ядро</div>
+                <div class="organelle mitochondria" data-organelle="mitochondria">Митохондрия</div>
+                <div class="organelle mitochondria-2" data-organelle="mitochondria">Митохондрия</div>
+                <div class="organelle endoplasmic-reticulum" data-organelle="er">ЭПС</div>
+                <div class="organelle golgi-apparatus" data-organelle="golgi">Аппарат Гольджи</div>
+                <div class="organelle ribosomes" data-organelle="ribosomes">Рибосомы</div>
+                <div class="organelle lysosome" data-organelle="lysosome">Лизосома</div>
+            </div>
+            
+            <div class="info-panel">
+                <h2 class="info-title">Информация об органеллах</h2>
+                <div class="info-content">
+                    <div class="default-message" id="defaultMessage">
+                        Наведите курсор на любую органеллу в клетке, чтобы увидеть здесь информацию о её функции
+                    </div>
+                    
+                    <div class="organelle-info" id="nucleus-info">
+                        <h3 class="organelle-name">Ядро</h3>
+                        <div class="organelle-function">Функция: Контрольный центр клетки</div>
+                        <p class="organelle-description">
+                            Ядро содержит генетический материал клетки (ДНК) и регулирует все её жизненные процессы.
+                            Оно управляет синтезом белков, делением клетки и передачей наследственной информации.
+                        </p>
+                    </div>
+                    
+                    <div class="organelle-info" id="mitochondria-info">
+                        <h3 class="organelle-name">Митохондрии</h3>
+                        <div class="organelle-function">Функция: Энергетическая станция клетки</div>
+                        <p class="organelle-description">
+                            Митохондрии производят энергию в форме АТФ в процессе клеточного дыхания.
+                        </p>
+                    </div>
+                    
+                    <div class="organelle-info" id="er-info">
+                        <h3 class="organelle-name">Эндоплазматическая сеть (ЭПС)</h3>
+                        <div class="organelle-function">Функция: Транспортная система и синтез веществ</div>
+                        <p class="organelle-description">
+                            ЭПС — система мембранных каналов. Шероховатая ЭПС участвует в синтезе белков,
+                            гладкая — в синтезе липидов и детоксикации.
+                        </p>
+                    </div>
+                    
+                    <div class="organelle-info" id="golgi-info">
+                        <h3 class="organelle-name">Аппарат Гольджи</h3>
+                        <div class="organelle-function">Функция: Сортировка и упаковка веществ</div>
+                        <p class="organelle-description">
+                            Аппарат Гольджи модифицирует и сортирует вещества, отправляя их по назначению.
+                        </p>
+                    </div>
+                    
+                    <div class="organelle-info" id="ribosomes-info">
+                        <h3 class="organelle-name">Рибосомы</h3>
+                        <div class="organelle-function">Функция: Синтез белков</div>
+                        <p class="organelle-description">
+                            Рибосомы синтезируют белки на основе информации матричной РНК.
+                        </p>
+                    </div>
+                    
+                    <div class="organelle-info" id="lysosome-info">
+                        <h3 class="organelle-name">Лизосомы</h3>
+                        <div class="organelle-function">Функция: Пищеварительная система клетки</div>
+                        <p class="organelle-description">
+                            Лизосомы расщепляют вещества и перерабатывают поврежденные структуры клетки.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Интерактивная модель животной клетки © 2023 | Для учебных целей</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const organelles = document.querySelectorAll('.organelle');
+            const defaultMessage = document.getElementById('defaultMessage');
+            const organelleInfos = document.querySelectorAll('.organelle-info');
+            
+            organelles.forEach(organelle => {
+                organelle.addEventListener('mouseenter', function() {
+                    const organelleType = this.getAttribute('data-organelle');
+                    defaultMessage.style.display = 'none';
+                    organelleInfos.forEach(info => info.classList.remove('active'));
+                    const targetInfo = document.getElementById(`${organelleType}-info`);
+                    if (targetInfo) targetInfo.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
+

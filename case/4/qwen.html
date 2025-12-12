@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Модель Атома</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .atom {
+      position: relative;
+      width: 300px;
+      height: 300px;
+    }
+
+    .orbit {
+      position: absolute;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .orbit-1 {
+      width: 120px;
+      height: 120px;
+    }
+
+    .orbit-2 {
+      width: 180px;
+      height: 180px;
+    }
+
+    .orbit-3 {
+      width: 240px;
+      height: 240px;
+    }
+
+    .nucleus {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      background: #FF5722;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+    }
+
+    .electron {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #2196F3;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform-origin: center;
+    }
+
+    .electron-1 { animation: rotate1 4s linear infinite; }
+    .electron-2 { animation: rotate2 6s linear infinite; }
+    .electron-3 { animation: rotate3 8s linear infinite; }
+
+    @keyframes rotate1 {
+      from { transform: translate(-50%, -50%) rotate(0deg) translateX(60px) translateY(0); }
+      to   { transform: translate(-50%, -50%) rotate(360deg) translateX(60px) translateY(0); }
+    }
+    @keyframes rotate2 {
+      from { transform: translate(-50%, -50%) rotate(0deg) translateX(90px) translateY(0); }
+      to   { transform: translate(-50%, -50%) rotate(360deg) translateX(90px) translateY(0); }
+    }
+    @keyframes rotate3 {
+      from { transform: translate(-50%, -50%) rotate(0deg) translateX(120px) translateY(0); }
+      to   { transform: translate(-50%, -50%) rotate(360deg) translateX(120px) translateY(0); }
+    }
+
+    @media (max-width: 360px) {
+      .atom { width: 240px; height: 240px; }
+      .orbit-1 { width: 100px; height: 100px; }
+      .orbit-2 { width: 150px; height: 150px; }
+      .orbit-3 { width: 200px; height: 200px; }
+      .nucleus { width: 20px; height: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="atom">
+    <div class="orbit orbit-1"></div>
+    <div class="orbit orbit-2"></div>
+    <div class="orbit orbit-3"></div>
+    <div class="nucleus"></div>
+    <div class="electron electron-1"></div>
+    <div class="electron electron-2"></div>
+    <div class="electron electron-3"></div>
+  </div>
+</body>
+</html>
+
+

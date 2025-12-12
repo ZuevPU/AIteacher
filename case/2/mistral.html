@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Исторический Платформер</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .question {
+            position: absolute;
+            top: 20px;
+            font-size: 1.2rem;
+            color: #333;
+            text-align: center;
+            z-index: 10;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 500px;
+            background-color: #f9f9f9;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 60px 0;
+        }
+
+        #student {
+            position: absolute;
+            width: 40px;
+            height: 60px;
+            background-color: #3498db;
+            border-radius: 10px 10px 5px 5px;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: bottom 0.05s linear;
+            z-index: 5;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 60"><rect x="10" y="10" width="20" height="30" fill="%233498db" rx="5"/><circle cx="20" y="15" r="8" fill="%23f1c40f"/><rect x="15" y="40" width="10" height="15" fill="%23e74c3c"/><rect x="5" y="45" width="5" height="10" fill="%233498db"/><rect x="30" y="45" width="5" height="10" fill="%233498db"/></svg>');
+            background-size: contain;
+        }
+
+        .platform {
+            position: absolute;
+            width: 100px;
+            height: 20px;
+            background-color: #e74c3c;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .platform.correct {
+            background-color: #2ecc71;
+        }
+
+        #ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 20px;
+            background-color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div class="question">
+        В каком году закончилась Великая Отечественная война?
+    </div>
+    <div id="game-container">
+        <div id="student"></div>
+        <div class="platform" style="bottom: 100px; left: 25%;" data-year="1941">1941</div>
+        <div class="platform" style="bottom: 200px; left: 50%;" data-year="1945">1945</div>
+        <div class="platform" style="bottom: 300px; left: 75%;" data-year="1949">1949</div>
+        <div id="ground"></div>
+    </div>
+
+    <script>
+        const student = document.getElementById('student');
+        const platforms = document.querySelectorAll('.platform');
+        const gameContainer = document.getElementById('game-container');
+        let isJumping = false;
+        let currentPlatform = null;
+        let studentBottom = 20;
+        let gravity = 1;
+        let jumpHeight = 80;
+        let velocity = 0;
+        let position = 0;
+
+        // Позиционирование студента
+        student.style.bottom = studentBottom + 'px';
+
+        // Обработка кликов по платформам
+        platforms.forEach(platform => {
+            platform.addEventListener('click', () => {
+                if (isJumping) return;
+
+                const platformBottom = parseInt(platform.style.bottom);
+                const platformLeft = parseInt(platform.style.left);
+                const studentLeft = parseInt(student.style.left) || 180;
+                const distance = Math.abs(platformLeft - studentLeft + 50);
+
+                if (distance < 70) {
+                    jump(platformBottom, platform);
+                }
+            });
+        });
+
+        // Функция прыжка
+        function jump(targetBottom, platform) {
+            if (isJumping) return;
+            isJumping = true;
+            const startBottom = studentBottom;
+            const targetPlatformBottom = targetBottom;
+            const duration = 500;
+            const startTime = Date.now();
+            const isCorrect = platform.getAttribute('data-year') === '1945';
+
+            const animation = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeProgress = easeOutQuad(progress);
+
+                if (progress < 0.5) {
+                    studentBottom = startBottom + (jumpHeight * easeProgress * 2);
+                } else {
+                    studentBottom = startBottom + jumpHeight - (jumpHeight * (easeProgress - 0.5) * 2);
+                }
+
+                student.style.bottom = studentBottom + 'px';
+
+                if (progress === 1) {
+                    clearInterval(animation);
+                    if (studentBottom >= targetPlatformBottom - 20 && studentBottom <= targetPlatformBottom + 20) {
+                        if (isCorrect) {
+                            platform.classList.add('correct');
+                            studentBottom = targetPlatformBottom + 20;
+                            student.style.bottom = studentBottom + 'px';
+                        } else {
+                            fall();
+                        }
+                    } else {
+                        fall();
+                    }
+                    isJumping = false;
+                }
+            }, 16);
+        }
+
+        // Падение
+        function fall() {
+            const fallInterval = setInterval(() => {
+                studentBottom -= 5;
+                student.style.bottom = studentBottom + 'px';
+
+                if (studentBottom <= 20) {
+                    clearInterval(fallInterval);
+                    studentBottom = 20;
+                    student.style.bottom = studentBottom + 'px';
+                }
+            }, 30);
+        }
+
+        // Функция плавности анимации
+        function easeOutQuad(t) {
+            return t * (2 - t);
+        }
+
+        // Управление с клавиатуры
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !isJumping) {
+                const closestPlatform = findClosestPlatform();
+                if (closestPlatform) {
+                    jump(parseInt(closestPlatform.style.bottom), closestPlatform);
+                }
+            }
+        });
+
+        // Поиск ближайшей платформы
+        function findClosestPlatform() {
+            const studentLeft = parseInt(student.style.left) || 180;
+            let closestPlatform = null;
+            let minDistance = Infinity;
+
+            platforms.forEach(platform => {
+                const platformLeft = parseInt(platform.style.left);
+                const distance = Math.abs(platformLeft - studentLeft + 50);
+                if (distance < minDistance && distance < 70) {
+                    minDistance = distance;
+                    closestPlatform = platform;
+                }
+            });
+
+            return closestPlatform;
+        }
+    </script>
+</body>
+</html>
+
+

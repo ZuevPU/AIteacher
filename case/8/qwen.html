@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Панель Обратной Связи</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    h1 {
+      margin: 20px 0 30px;
+      text-align: center;
+      font-size: 1.6rem;
+      color: #333;
+    }
+
+    .feedback-panel {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 25px;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .zone {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 240px;
+      height: 280px;
+      background: #f8f9fa;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      position: relative;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .zone:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    }
+
+    .zone-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+
+    .zone-trash .zone-icon { color: #e74c3c; }
+    .zone-suitcase .zone-icon { color: #3498db; }
+    .zone-grinder .zone-icon { color: #2ecc71; }
+
+    .zone-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      text-align: center;
+      padding: 0 10px;
+    }
+
+    .zone-counter {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .zone.activated { animation: pulse 0.6s ease-out; }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+      50% { box-shadow: 0 0 0 15px rgba(52, 152, 219, 0.3); transform: scale(1.03); }
+      100% { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    }
+
+    .zone-trash.activated { animation-name: pulse-trash; }
+    .zone-suitcase.activated { animation-name: pulse-suitcase; }
+    .zone-grinder.activated { animation-name: pulse-grinder; }
+
+    @keyframes pulse-trash {
+      0% { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+      50% { box-shadow: 0 0 0 15px rgba(231, 76, 60, 0.3); transform: scale(1.03); }
+      100% { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    }
+    @keyframes pulse-suitcase {
+      0% { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+      50% { box-shadow: 0 0 0 15px rgba(52, 152, 219, 0.3); transform: scale(1.03); }
+      100% { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    }
+    @keyframes pulse-grinder {
+      0% { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+      50% { box-shadow: 0 0 0 15px rgba(46, 204, 113, 0.3); transform: scale(1.03); }
+      100% { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    }
+
+    .counter-increment {
+      position: absolute;
+      font-size: 2rem;
+      font-weight: bold;
+      opacity: 0;
+      pointer-events: none;
+      animation: floatUp 0.8s forwards;
+    }
+
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-50px); }
+    }
+
+    @media (max-width: 768px) {
+      .feedback-panel { gap: 20px; }
+      .zone { width: 220px; height: 260px; }
+      .zone-icon { font-size: 56px; }
+    }
+
+    @media (max-width: 480px) {
+      .feedback-panel { flex-direction: column; align-items: center; }
+      .zone { width: 90vw; max-width: 320px; height: 250px; }
+      .zone-icon { font-size: 60px; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Обратная связь по материалу</h1>
+
+  <div class="feedback-panel">
+    <div class="zone zone-trash" data-id="trash">
+      <div class="zone-icon">🗑️</div>
+      <div class="zone-title">Мусорник<br><small>(Выбросить)</small></div>
+      <div class="zone-counter">0</div>
+    </div>
+
+    <div class="zone zone-suitcase" data-id="suitcase">
+      <div class="zone-icon">🧳</div>
+      <div class="zone-title">Чемодан<br><small>(Взять с собой)</small></div>
+      <div class="zone-counter">0</div>
+    </div>
+
+    <div class="zone zone-grinder" data-id="grinder">
+      <div class="zone-icon">⚙️</div>
+      <div class="zone-title">Мясорубка<br><small>(Обдумать)</small></div>
+      <div class="zone-counter">0</div>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.zone').forEach(zone => {
+      const counterEl = zone.querySelector('.zone-counter');
+      let count = 0;
+
+      zone.addEventListener('click', function() {
+        count++;
+        counterEl.textContent = count;
+
+        this.classList.add('activated');
+        setTimeout(() => this.classList.remove('activated'), 600);
+
+        const rect = counterEl.getBoundingClientRect();
+        const containerRect = document.body.getBoundingClientRect();
+        const span = document.createElement('span');
+        span.textContent = '+1';
+        span.className = 'counter-increment';
+        span.style.left = (rect.left - containerRect.left + rect.width / 2) + 'px';
+        span.style.top = (rect.top - containerRect.top + rect.height / 2) + 'px';
+        document.body.appendChild(span);
+
+        setTimeout(() => span.remove(), 800);
+      });
+    });
+  </script>
+</body>
+</html>
+
+
