@@ -14,7 +14,7 @@
     {
       key: "gigachat",
       name: "GigaChat",
-      url: "https://gigachat.sber.ru/",
+      url: "https://giga.chat/",
       country: "Россия",
       desc: "Большая языковая модель, разработанная... (заглушка для описания).",
     },
@@ -38,6 +38,33 @@
       url: "https://mistral.ai/",
       country: "Франция/США (Европа/США)",
       desc: "Большая языковая модель, разработанная... (заглушка для описания).",
+    },
+  ];
+
+  const ADDITIONAL_SERVICES = [
+    {
+      name: "Gamma",
+      url: "https://gamma.app/signup?r=9u95k6utp2gs9rs",
+      country: "США",
+      desc: "ИИ-платформа для создания презентаций, сайтов и документов. Генерирует слайды, питч-деки, графику для соцсетей.",
+    },
+    {
+      name: "Яндекс Алиса Про",
+      url: "https://alicepro.yandex.ru/expert",
+      country: "Россия",
+      desc: "ИИ-помощник Яндекса для работы с документами, анализа и структурирования корпоративных файлов.",
+    },
+    {
+      name: "Perplexity",
+      url: "https://www.perplexity.ai/",
+      country: "США",
+      desc: "ИИ-поисковик с цитированием источников. Ответы на вопросы с проверяемыми ссылками.",
+    },
+    {
+      name: "Shedevrum",
+      url: "https://shedevrum.ai/",
+      country: "Россия",
+      desc: "Генерация изображений по текстовому описанию. Фото, видео, клипы на базе нейросетей.",
     },
   ];
 
@@ -279,6 +306,29 @@
             <span class="pill pill-primary">Контент</span>
           </div>
           <p class="card-desc">${escapeHtml(m.desc)}</p>
+          <div class="card-actions">
+            <a class="btn btn-small" href="${safeUrl}" target="_blank" rel="noreferrer">Открыть сайт</a>
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
+
+  function renderExtraServices() {
+    const grid = $("#netsExtraGrid");
+    if (!grid) return;
+    grid.innerHTML = ADDITIONAL_SERVICES.map((s) => {
+      const safeUrl = escapeHtml(s.url);
+      return `
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">${escapeHtml(s.name)}</div>
+              <div class="card-meta">${escapeHtml(s.country)}</div>
+            </div>
+            <span class="pill pill-primary">Сервис</span>
+          </div>
+          <p class="card-desc">${escapeHtml(s.desc)}</p>
           <div class="card-actions">
             <a class="btn btn-small" href="${safeUrl}" target="_blank" rel="noreferrer">Открыть сайт</a>
           </div>
@@ -542,9 +592,31 @@
     if (y) y.textContent = String(new Date().getFullYear());
   }
 
+  function bindBenchmarkNav() {
+    document.querySelector('[data-nav="benchmark"]')?.addEventListener("click", () => {
+      document.getElementById("tabs")?.scrollIntoView({ behavior: "smooth" });
+    });
+  }
+
+  function bindNavToggle() {
+    const toggle = document.getElementById("navToggle");
+    const wrap = document.querySelector(".nav-wrap");
+    if (!toggle || !wrap) return;
+    toggle.addEventListener("click", () => {
+      const open = wrap.classList.toggle("is-open");
+      toggle.setAttribute("aria-expanded", String(open));
+    });
+    wrap.querySelectorAll(".top-actions .link").forEach((link) => {
+      link.addEventListener("click", () => wrap.classList.remove("is-open"));
+    });
+  }
+
   function init() {
     initYear();
+    bindBenchmarkNav();
+    bindNavToggle();
     renderNetworks();
+    renderExtraServices();
     bindCaseSearch();
     renderCaseNav();
     renderCaseView();

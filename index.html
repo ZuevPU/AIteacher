@@ -30,10 +30,19 @@
           </span>
         </div>
 
-        <nav class="top-actions" aria-label="Быстрая навигация">
-          <a class="link" href="#nets">Нейросети</a>
-          <a class="link" href="#tabs">Бенчмарк</a>
-        </nav>
+        <div class="nav-wrap">
+          <button class="nav-toggle" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainNav" id="navToggle">
+            <span class="nav-toggle-bar"></span>
+            <span class="nav-toggle-bar"></span>
+            <span class="nav-toggle-bar"></span>
+          </button>
+          <nav class="top-actions" id="mainNav" aria-label="Быстрая навигация">
+            <a class="link" href="./prompts.html">Промпты</a>
+            <a class="link" href="./cases.html">Кейсы</a>
+            <a class="link" href="#nets">Нейросети</a>
+            <a class="link is-active" href="#tabs">Бенчмарк</a>
+          </nav>
+        </div>
       </div>
     </header>
 
@@ -76,6 +85,10 @@
             <h2 class="h2">Сравниваемые нейросети</h2>
           </div>
           <div id="netsGrid" class="grid" aria-label="Список нейросетей"></div>
+          <div class="section-head" style="margin-top: 24px;">
+            <h2 class="h2">Дополнительные сервисы</h2>
+          </div>
+          <div id="netsExtraGrid" class="grid" aria-label="Дополнительные сервисы"></div>
         </div>
       </section>
 

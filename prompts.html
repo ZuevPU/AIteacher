@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <meta name="description" content="Промпты для педагогов: использование нейросетей в образовательном процессе с примерами промптов." />
+    <title>Промпты — Нейросети в образовании</title>
+    <link rel="stylesheet" href="./style.css" />
+    <style>
+      .memo-intro { background: rgba(255,255,255,0.66); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
+      .memo-intro h2 { margin: 0 0 12px; font-size: 1.15rem; }
+      .memo-intro ul { margin: 8px 0 0; padding-left: 20px; color: var(--muted); }
+      .prompt-block { margin: 10px 0; padding: 12px; background: rgba(15,23,42,0.03); border-radius: 12px; border: 1px solid var(--border); position: relative; }
+      .prompt-block pre { margin: 0; white-space: pre-wrap; word-break: break-word; font-size: 13px; max-height: 280px; overflow: auto; }
+      .prompt-block .copy-prompt { position: absolute; top: 10px; right: 10px; padding: 10px 14px; min-height: 44px; font-size: 12px; }
+      .category-section { margin-bottom: 20px; }
+      .category-section summary { cursor: pointer; padding: 12px 14px; font-weight: 700; border-radius: var(--radius); background: var(--surface-2); border: 1px solid var(--border); list-style: none; }
+      .category-section summary::-webkit-details-marker { display: none; }
+      .category-section[open] summary { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+      .category-section .category-body { padding: 14px; border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius) var(--radius); background: var(--surface); }
+      .prompt-item { margin-bottom: 14px; }
+      .prompt-item:last-child { margin-bottom: 0; }
+      .prompt-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+      .memo-search-wrap { margin-bottom: 16px; }
+      .memo-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+      .memo-badge { padding: 6px 10px; border-radius: 999px; background: var(--primary-soft); border: 1px solid rgba(37,99,235,0.22); color: var(--primary-700); font-size: 12px; font-weight: 600; cursor: pointer; }
+      .memo-badge:hover { filter: brightness(1.05); }
+      .memo-badge.active { background: var(--primary); color: white; border-color: var(--primary); }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Перейти к содержимому</a>
+
+    <header class="app-header" role="banner">
+      <div class="container header-row">
+        <div class="brand" aria-label="Название проекта">
+          <span class="brand-mark" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 1.5c4.7 0 8.5 3.8 8.5 8.5S14.7 18.5 10 18.5 1.5 14.7 1.5 10 5.3 1.5 10 1.5Z" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M6 10.2 8.7 12.9 14.2 7.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="brand-text">
+            <span class="brand-title">EduBench</span>
+            <span class="brand-subtitle">Промпты для педагогов</span>
+          </span>
+        </div>
+        <div class="nav-wrap">
+          <button class="nav-toggle" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainNav" id="navToggle">
+            <span class="nav-toggle-bar"></span>
+            <span class="nav-toggle-bar"></span>
+            <span class="nav-toggle-bar"></span>
+          </button>
+          <nav class="top-actions" id="mainNav" aria-label="Навигация">
+            <a class="link is-active" href="./prompts.html">Промпты</a>
+            <a class="link" href="./cases.html">Кейсы</a>
+            <a class="link" href="./index.html#nets">Нейросети</a>
+            <a class="link" href="./index.html#tabs">Бенчмарк</a>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="app-main" role="main">
+      <section class="hero">
+        <div class="container">
+          <h1 class="h1">Промпты для педагогов: использование нейросетей в образовании</h1>
+          <p class="lead">
+            Нейросети — оперативный помощник учителя: сокращают время на подготовку занятий, расширяют спектр дидактических форматов и позволяют создавать адаптивные и творческие задания.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="memo-search-wrap">
+            <input id="memoSearch" class="input" type="search" placeholder="Поиск по разделам и промптам…" autocomplete="off" spellcheck="false" />
+          </div>
+          <div class="memo-badges" id="memoBadges">
+            <button type="button" class="memo-badge active" data-filter="">Все</button>
+            <button type="button" class="memo-badge" data-filter="учеб">Учебные задания</button>
+            <button type="button" class="memo-badge" data-filter="предмет">По предметам</button>
+            <button type="button" class="memo-badge" data-filter="админ">Административные</button>
+            <button type="button" class="memo-badge" data-filter="управление">Управление школой</button>
+            <button type="button" class="memo-badge" data-filter="mind">Mind Map</button>
+            <button type="button" class="memo-badge" data-filter="креатив">Креатив</button>
+          </div>
+
+          <div class="memo-intro" id="intro">
+            <h2>Что могут нейросети в школе</h2>
+            <ul>
+              <li>создавать задания и тесты</li>
+              <li>подбирать материалы под уровень класса</li>
+              <li>генерировать сценарии уроков и мероприятий</li>
+              <li>формировать творческие задания для креативных проектов</li>
+              <li>помогать в анализе текстов и документов</li>
+              <li>улучшать визуальное оформление материалов</li>
+            </ul>
+          </div>
+
+          <!-- 1. Учебные задания -->
+          <details class="category-section" data-category="учеб">
+            <summary>1. Учебные задания и тесты</summary>
+            <div class="category-body">
+              <div class="prompt-item">
+                <div class="prompt-label">Физика</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Создай 10 задач по физике для 9 класса по теме «Законы Ньютона» с тремя уровнями сложности.</pre>
+                </div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Математика</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Составь 5 задач по теме «Квадратные уравнения» для учеников с базовым уровнем подготовки.</pre>
+                </div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Литература</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Составь задание по литературе для 9 класса с анализом образов главных героев «Войны и мира».</pre>
+                </div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">История</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Создай 20 вопросов по теме «Древняя Греция» для 5 класса с ответами.</pre>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <!-- 2. По предметам -->
+          <details class="category-section" data-category="предмет">
+            <summary>2. Промпты по предметам</summary>
+            <div class="category-body">
+              <div class="prompt-item">
+                <div class="prompt-label">Математика — пропорции</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Ты — учитель математики. Создай 10 задач для 7 класса по теме пропорции и проценты.
+Требования: 3 задачи базовые; 5 задач среднего уровня; 2 задачи повышенной сложности; укажи ответы; избегай однотипных формулировок.</pre>
+                </div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Физика — плотность</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Создай 5 задач по физике для 8 класса по теме плотность вещества, в которых используются жизненные ситуации (кухонные измерения, объём воды, бытовые предметы). Добавь ответы.</pre>
+                </div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Химия — растворы</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Составь 12 задач по химии для 9 класса по теме массовая доля вещества в растворе.
+Включи: 4 задачи на прямой расчёт; 4 задачи на приготовление раствора; 4 задачи на обратный расчёт (через массу раствора).</pre>
+                </div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Биология — тест</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Составь тест из 15 вопросов для 7 класса по теме кровеносная система человека.
+5 — с вариантами ответов; 5 — на соответствие; 5 — открытых. Добавь ключи и краткие комментарии к правильным ответам.</pre>
+                </div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">История — аналитика</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Составь аналитическое задание по теме Киевская Русь для 6 класса.
+Требуется: мини-историческое сравнение (до 5 предложений); 3 вопроса на причинно-следственные связи; 1 творческое задание.</pre>
+                </div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Английский — Past Continuous</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Создай 10 заданий на тему Past Continuous:
+4 предложения на дополнение; 3 задания на исправление ошибок; 3 диалоговых мини-задачи.</pre>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <!-- 3. Творческие и проектные -->
+          <details class="category-section" data-category="учеб">
+            <summary>3. Творческие задания и проекты</summary>
+            <div class="category-body">
+              <div class="prompt-item">
+                <div class="prompt-label">Экология</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Составь проектное задание по экологии для 5 класса: исследовать экологические проблемы школы и предложить решения.</pre>
+                </div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Литература — письмо героя</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Составь творческое задание: написать письмо от лица крестьянина времён Великой французской революции.</pre>
+                </div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Биология — творческое</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Придумай творческое задание для 5 класса: «Представьте, что вы клетка организма». Опиши функции, взаимодействие с другими клетками, «рабочий день клетки». Формат — мини-рассказ (8–10 предложений).</pre>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <!-- 4. Работа с творческими задачами и креативом -->
+          <details class="category-section" data-category="креатив">
+            <summary>4. Работа с творческими задачами и креативом</summary>
+            <div class="category-body">
+              <div class="prompt-item">
+                <div class="prompt-label">Креативный редактор — 12 углов подачи</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Ты — креативный редактор. Мне нужна не готовая публикация, а варианты для подачи.
+Тема: [тема]. Аудитория: [аудитория]. Цель: [что должен сделать читатель].
+
+Дай 12 «углов»:
+4 практичных («сделай завтра»)
+3 провокационных (но без токсичности)
+3 через личную мини-историю
+2 через метафору/образ
+
+Для каждого: заголовок + 1 тезис + какой формат лучше (пост/письмо/скрипт/сторис)</pre>
+                </div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Сценарный редактор — 3 структуры</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Ты — сценарный редактор.
+Сделай 3 разные структуры сценария по теме [тема] [длительность/формат].
+
+Каждая структура:
+хук (первые 10 секунд / первая фраза)
+3–5 ключевых сцен/блоков (что происходит)
+«поворот» (момент переосмысления)
+финал (что зритель/слушатель должен унести)
+2 места для живого примера из реальной жизни (без выдуманных фактов)
+
+Не пиши финальный текст — только скелет и ритм.</pre>
+                </div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Редактор — ломаем клише</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Ты — редактор, который ломает клише на [тема].
+
+Сделай 10 альтернативных подач/идей, используя разные оптики:
+«контринтуитивно» (почему все делают неправильно)
+«через ошибку/факап» (что обычно упускают)
+«через аналогию» (неожиданный образ)
+«через вопрос» (сократовский стиль)
+«через чек-лист» (коротко и практично)
+
+Для каждой: 1 заголовок + 2 ключевые мысли.
+
+Запрет: штампы и общие слова. Не писать готовый текст.</pre>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <!-- 5. Mind Map и кластеры -->
+          <details class="category-section" data-category="mind">
+            <summary>5. Mind Map и кластеры</summary>
+            <div class="category-body">
+              <div class="prompt-item">
+                <div class="prompt-label">Mind Map по теме</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Создай структурированную mind map по теме [тема] для [класс].
+Требования: 1 центральный концепт; 4–6 ветвей; у каждой ветви — 3–5 подветвей; дай схему в виде иерархического списка.</pre>
+                </div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Mind Map для ЕГЭ/ОГЭ</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Создай mind map для подготовки к ЕГЭ/ОГЭ по [предмет]. Структура: основные темы экзамена; ключевые формулы/термины; типичные ошибки; тактика выполнения. Вывод в виде дерева.</pre>
+                </div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Кластер для объяснения</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Создай кластер для объяснения темы [тема]. В центре — ключевое понятие. Вокруг — 6 смысловых блоков: определения, свойства, примеры, исключения, практическое применение, контрольные вопросы.</pre>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <!-- 5. Административные задачи -->
+          <details class="category-section" data-category="админ">
+            <summary>6. Административно-организационные задачи</summary>
+            <div class="category-body">
+              <div class="prompt-item">
+                <div class="prompt-label">SMM — план продвижения</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Ты — опытный SMM-специалист. Мы запускаем [программа] для [целевая аудитория]. Опиши пошаговый план продвижения: каналы, УТП, типы контента, график публикаций.</pre>
+                </div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Письмо-приглашение</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Ты — представитель оргкомитета. Напиши краткое мотивирующее приглашение для [аудитория] на конференцию [тема]. Укажи 3 выгоды.</pre>
+                </div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Описание вакансии</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Напиши подробное описание вакансии [название], включая обязанности и компетенции, связанные с [сфера].</pre>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <!-- 6. Управление школой -->
+          <details class="category-section" data-category="управление">
+            <summary>7. Управление школой и стратегия</summary>
+            <div class="category-body">
+              <div class="prompt-item">
+                <div class="prompt-label">Стратегия развития</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Сформируй стратегию развития школы на 1/3/5 лет. Учитывай: приоритеты образования РФ, результаты внутреннего мониторинга, кадровый состав, текущие риски, зоны роста, цифровые проекты, внеурочную деятельность, профильность, взаимодействие с сообществом. Представь стратегию в виде целей, KPI, шагов внедрения и ожидаемых эффектов.</pre>
+                </div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">План ВШК</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Создай детализированный план внутришкольного контроля по направлениям: уроки, документация, воспитательная работа, внеурочная деятельность, цифровые инструменты, работа классных руководителей. Добавь инструменты оценки и формы вывода данных.</pre>
+                </div>
+              </div>
+              <div class="prompt-item">
+                <div class="prompt-label">Коммуникация с родителями</div>
+                <div class="prompt-block">
+                  <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+                  <pre>Разработай план коммуникации с родительским сообществом на год: ключевые темы, каналы, частота, формы обратной связи, риски и способы их предупреждения.</pre>
+                </div>
+              </div>
+            </div>
+          </details>
+
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer" role="contentinfo">
+      <div class="container footer-row">
+        <div class="muted"><strong>EduBench</strong> · Промпты</div>
+        <div class="muted">© <span id="year"></span></div>
+      </div>
+    </footer>
+
+    <script>
+      (function() {
+        const $ = (sel, r = document) => r.querySelector(sel);
+        const $$ = (sel, r = document) => Array.from(r.querySelectorAll(sel));
+
+        function toast(msg) {
+          let el = $("#toast");
+          if (!el) {
+            el = document.createElement("div");
+            el.id = "toast";
+            el.className = "toast";
+            document.body.appendChild(el);
+          }
+          el.textContent = msg;
+          el.classList.add("is-visible");
+          clearTimeout(toast._t);
+          toast._t = setTimeout(() => el.classList.remove("is-visible"), 1400);
+        }
+
+        function initYear() {
+          const y = $("#year");
+          if (y) y.textContent = String(new Date().getFullYear());
+        }
+
+        // Copy prompts
+        $$("[data-copy]").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            const block = btn.closest(".prompt-block");
+            const pre = block?.querySelector("pre");
+            const text = pre?.textContent?.trim() || "";
+            try {
+              await navigator.clipboard.writeText(text);
+              toast("Промпт скопирован");
+            } catch {
+              toast("Не удалось скопировать");
+            }
+          });
+        });
+
+        // Search
+        const searchInput = $("#memoSearch");
+        if (searchInput) {
+          searchInput.addEventListener("input", () => {
+            const q = searchInput.value.trim().toLowerCase();
+            $$(".category-section").forEach(section => {
+              const body = section.querySelector(".category-body");
+              const text = section.textContent.toLowerCase();
+              const matches = !q || text.includes(q);
+              section.style.display = matches ? "" : "none";
+              if (matches && q) section.open = true;
+            });
+          });
+        }
+
+        // Filter badges
+        $$(".memo-badge").forEach(badge => {
+          badge.addEventListener("click", () => {
+            $$(".memo-badge").forEach(b => b.classList.remove("active"));
+            badge.classList.add("active");
+            const filter = badge.dataset.filter || "";
+            $$(".category-section").forEach(section => {
+              const cat = section.dataset.category || "";
+              const matches = !filter || cat.includes(filter);
+              section.style.display = matches ? "" : "none";
+              if (matches && filter) section.open = true;
+            });
+          });
+        });
+
+        initYear();
+        const navToggle = document.getElementById("navToggle");
+        const navWrap = document.querySelector(".nav-wrap");
+        if (navToggle && navWrap) {
+          navToggle.addEventListener("click", () => {
+            navWrap.classList.toggle("is-open");
+            navToggle.setAttribute("aria-expanded", navWrap.classList.contains("is-open"));
+          });
+          navWrap.querySelectorAll(".top-actions .link").forEach(l => l.addEventListener("click", () => navWrap.classList.remove("is-open")));
+        }
+      })();
+    </script>
+  </body>
+</html>

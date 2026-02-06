@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <meta name="description" content="Кейсы: анализ данных, нейросети для работы с файлами, примеры для скачивания." />
+    <title>Кейсы — Анализ данных и нейросети</title>
+    <link rel="stylesheet" href="./style.css" />
+    <style>
+      .case-panel { background: rgba(255,255,255,0.66); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 24px; box-shadow: var(--shadow-sm); }
+      .case-panel h2 { margin: 0 0 14px; font-size: 1.15rem; }
+      .prompt-block { margin: 12px 0; padding: 12px; background: rgba(15,23,42,0.03); border-radius: 12px; border: 1px solid var(--border); position: relative; }
+      .prompt-block pre { margin: 0; white-space: pre-wrap; word-break: break-word; font-size: 13px; max-height: 320px; overflow: auto; }
+      .prompt-block.prompt-block-tall pre { max-height: 420px; }
+      .prompt-block.prompt-block-wide pre { max-height: 500px; }
+      .case-links { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+      .case-links a { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--primary-soft); border: 1px solid rgba(37,99,235,0.22); border-radius: 12px; color: var(--primary-700); font-weight: 600; text-decoration: none; }
+      .case-links a:hover { background: rgba(37,99,235,0.18); text-decoration: none; }
+      .steps-grid { display: grid; gap: 16px; margin-top: 16px; }
+      .step-card { padding: 14px 16px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); }
+      .step-card h4 { margin: 0 0 8px; font-size: 14px; }
+      .step-card ol { margin: 0; padding-left: 20px; font-size: 13px; color: var(--muted); line-height: 1.6; }
+      .step-card a { color: var(--primary); text-decoration: none; }
+      .step-card a:hover { text-decoration: underline; }
+      .prompt-block .copy-prompt { position: absolute; top: 10px; right: 10px; padding: 10px 14px; min-height: 44px; font-size: 12px; }
+      .nets-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+      .nets-table th, .nets-table td { padding: 12px 14px; text-align: left; border: 1px solid var(--border); }
+      .nets-table th { background: var(--surface-2); font-weight: 700; }
+      .nets-table tr:nth-child(even) { background: rgba(15,23,42,0.02); }
+      .nets-table a { color: var(--primary); text-decoration: none; }
+      .nets-table a:hover { text-decoration: underline; }
+      .nets-table ul { margin: 6px 0 0; padding-left: 18px; }
+      .download-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+      .download-card { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); }
+      .download-card a { display: flex; align-items: center; gap: 10px; color: var(--primary); font-weight: 600; text-decoration: none; }
+      .download-card a:hover { text-decoration: underline; }
+      .download-card-desc { font-size: 12px; color: var(--muted); margin: 4px 0 0; font-weight: 400; }
+      .download-icon { font-size: 24px; }
+      .bento-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 32px; }
+      .bento-card { display: block; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); text-decoration: none; color: inherit; transition: border-color 0.15s, box-shadow 0.15s; }
+      .bento-card:hover { border-color: rgba(37,99,235,0.3); box-shadow: var(--shadow); }
+      .bento-card-num { font-size: 12px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+      .bento-card-title { font-weight: 760; font-size: 1rem; margin: 0 0 8px; }
+      .bento-card-desc { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.45; }
+      .case-block { margin-bottom: 28px; scroll-margin-top: 80px; }
+      .case-block-title { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+      .case-block-title .num { font-size: 12px; font-weight: 700; color: var(--primary); }
+      .case-block-title h2 { margin: 0; font-size: 1.1rem; }
+      .case-block-section { margin-bottom: 18px; }
+      .case-block-section:last-child { margin-bottom: 0; }
+      .case-block-section h4 { margin: 0 0 8px; font-size: 13px; font-weight: 700; color: var(--muted); }
+      @media (max-width: 900px) { .bento-grid { grid-template-columns: 1fr; } }
+      @media (max-width: 760px) { .nets-table { display: block; } .nets-table th, .nets-table td { display: block; } .nets-table tr { margin-bottom: 12px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; } .nets-table th { border-bottom: 1px solid var(--border); } }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Перейти к содержимому</a>
+
+    <header class="app-header" role="banner">
+      <div class="container header-row">
+        <div class="brand" aria-label="Название проекта">
+          <span class="brand-mark" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 1.5c4.7 0 8.5 3.8 8.5 8.5S14.7 18.5 10 18.5 1.5 14.7 1.5 10 5.3 1.5 10 1.5Z" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M6 10.2 8.7 12.9 14.2 7.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="brand-text">
+            <span class="brand-title">EduBench</span>
+            <span class="brand-subtitle">Кейсы: анализ данных</span>
+          </span>
+        </div>
+        <div class="nav-wrap">
+          <button class="nav-toggle" type="button" aria-label="Меню" aria-expanded="false" aria-controls="mainNav" id="navToggle">
+            <span class="nav-toggle-bar"></span>
+            <span class="nav-toggle-bar"></span>
+            <span class="nav-toggle-bar"></span>
+          </button>
+          <nav class="top-actions" id="mainNav" aria-label="Навигация">
+            <a class="link" href="./prompts.html">Промпты</a>
+            <a class="link is-active" href="./cases.html">Кейсы</a>
+            <a class="link" href="./index.html#nets">Нейросети</a>
+            <a class="link" href="./index.html#tabs">Бенчмарк</a>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="app-main" role="main">
+      <section class="hero">
+        <div class="container">
+          <h1 class="h1">Кейсы: анализ данных и нейросети</h1>
+          <p class="lead">
+            Работа с файлами, данными, аудио и разработка веб-приложений с помощью нейросетей: промпты, инструменты и примеры для практики.
+          </p>
+          <nav class="bento-grid" aria-label="Выбор кейса">
+            <a class="bento-card" href="#case1">
+              <span class="bento-card-num">Кейс 1</span>
+              <div class="bento-card-title">Анализ данных</div>
+              <p class="bento-card-desc">Промпты для обработки файлов, нейросети для таблиц, примеры ex_1.xlsx и ex_2.xlsx</p>
+            </a>
+            <a class="bento-card" href="#case2">
+              <span class="bento-card-num">Кейс 2</span>
+              <div class="bento-card-title">Анализ звука</div>
+              <p class="bento-card-desc">Расшифровка и анализ лекций, нейросети для аудио, пример ex_3.mp3</p>
+            </a>
+            <a class="bento-card" href="#case3">
+              <span class="bento-card-num">Кейс 3</span>
+              <div class="bento-card-title">Разработка приложений</div>
+              <p class="bento-card-desc">Тесты в веб-интерфейсы, промпт и пример ex_4.doc, публикация на GitHub</p>
+            </a>
+          </nav>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <!-- Кейс 1 -->
+          <article class="case-panel case-block" id="case1">
+            <div class="case-block-title"><span class="num">Кейс 1</span><h2>Анализ данных</h2></div>
+            <div class="case-block-section">
+              <h4>Промпты для обработки файлов</h4>
+            <div class="prompt-block">
+              <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+              <pre>Какую информацию содержит этот файл?</pre>
+            </div>
+            <div class="prompt-block">
+              <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+              <pre>Выступи в роли PHD Data Scientist. Как бы ты анализировал этот файл? Напиши пошагово.</pre>
+            </div>
+            <div class="prompt-block">
+              <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+              <pre>А теперь выполни анализ по этому плану.</pre>
+            </div>
+            </div>
+            <div class="case-block-section">
+              <h4>Нейросети для анализа данных</h4>
+            <div style="overflow-x: auto;">
+              <table class="nets-table">
+                <thead>
+                  <tr>
+                    <th>Нейросеть</th>
+                    <th>Сайт</th>
+                    <th>Описание</th>
+                    <th>Особенности</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>DeepSeek</strong></td>
+                    <td><a href="https://www.deepseek.com/" target="_blank" rel="noreferrer">deepseek.com</a></td>
+                    <td>Продвинутая ИИ-платформа для точного извлечения инсайтов и работы с кодом.</td>
+                    <td>
+                      <ul>
+                        <li>Высокая точность в решении математических и логических задач</li>
+                        <li>Поддержка структурированных данных (например, .csv)</li>
+                        <li>Эффективен для финансового прогнозирования</li>
+                      </ul>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>Qwen (Tongyi Qianwen)</strong></td>
+                    <td><a href="https://chat.qwen.ai/" target="_blank" rel="noreferrer">chat.qwen.ai</a></td>
+                    <td>Мультимодальный LLM для глубоких исследований и анализа больших контекстов.</td>
+                    <td>
+                      <ul>
+                        <li>Большое контекстное окно для анализа объёмных документов</li>
+                        <li>Функция «Глубокое исследование» (Deep Research) для многоэтапной аналитики</li>
+                        <li>Обработка мультимодальных данных (текст, изображения)</li>
+                      </ul>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>GigaChat</strong></td>
+                    <td><a href="https://giga.chat/" target="_blank" rel="noreferrer">giga.chat</a></td>
+                    <td>Российский инструмент для быстрого анализа рыночных данных и бизнес-аналитики.</td>
+                    <td>
+                      <ul>
+                        <li>Режим «Провести исследование» для автоматизированной подготовки аналитических отчетов</li>
+                        <li>Специализация на анализе больших таблиц и эффективности рекламных кампаний</li>
+                        <li>Выявление трендов и поведенческих моделей</li>
+                      </ul>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>Mistral AI</strong></td>
+                    <td><a href="https://chat.mistral.ai/chat" target="_blank" rel="noreferrer">chat.mistral.ai</a></td>
+                    <td>Высокопроизводительный и эффективный LLM для корпоративного извлечения знаний.</td>
+                    <td>
+                      <ul>
+                        <li>Оптимизирован для скорости и расширенного рассуждения в больших наборах данных</li>
+                        <li>Инструменты для преобразования неструктурированных данных в действенные выводы</li>
+                        <li>Использование в финансовых, медицинских и комплаенс-анализах</li>
+                      </ul>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>Яндекс Алиса Про</strong></td>
+                    <td><a href="https://alicepro.yandex.ru/expert" target="_blank" rel="noreferrer">alicepro.yandex.ru</a></td>
+                    <td>ИИ-помощник, интегрированный в Yandex 360, для работы с внутренней документацией.</td>
+                    <td>
+                      <ul>
+                        <li>Фокус на анализе и структурировании корпоративных документов и почты</li>
+                        <li>Применение для извлечения фактов из ваших файлов</li>
+                        <li>Умеет суммировать и извлекать данные из загруженных таблиц и презентаций</li>
+                      </ul>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            </div>
+            <div class="case-block-section">
+              <h4>Примеры для практики</h4>
+            <div class="download-grid">
+              <div class="download-card">
+                <div>
+                  <a href="./ex/ex_1.xlsx" download><span class="download-icon" aria-hidden="true">📊</span><span>ex_1.xlsx</span></a>
+                  <p class="download-card-desc">Таблица для анализа (Кейс 1)</p>
+                </div>
+              </div>
+              <div class="download-card">
+                <div>
+                  <a href="./ex/ex_2.xlsx" download><span class="download-icon" aria-hidden="true">📊</span><span>ex_2.xlsx</span></a>
+                  <p class="download-card-desc">Таблица для анализа (Кейс 1)</p>
+                </div>
+              </div>
+            </div>
+            </div>
+          </article>
+
+          <!-- Кейс 2 -->
+          <article class="case-panel case-block" id="case2">
+            <div class="case-block-title"><span class="num">Кейс 2</span><h2>Анализ звука</h2></div>
+            <div class="case-block-section">
+              <h4>Нейросети для аудио</h4>
+            <div style="overflow-x: auto; margin-bottom: 20px;">
+              <table class="nets-table">
+                <thead>
+                  <tr>
+                    <th>Нейросеть</th>
+                    <th>Сайт</th>
+                    <th>Описание</th>
+                    <th>Особенности (для аудио)</th>
+                    <th>Ограничения</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Qwen (Tongyi Qianwen)</strong></td>
+                    <td><a href="https://chat.qwen.ai/" target="_blank" rel="noreferrer">chat.qwen.ai</a></td>
+                    <td>Мультимодальный LLM для расшифровки, анализа и работы с голосовым контентом.</td>
+                    <td>
+                      <ul>
+                        <li>Способность понимать, анализировать и генерировать контент в различных модальностях, включая аудио</li>
+                        <li>Идеален для расшифровки записей в рамках контекстного окна</li>
+                      </ul>
+                    </td>
+                    <td>Максимальная длина аудиофайла — 3 минуты</td>
+                  </tr>
+                  <tr>
+                    <td><strong>GigaChat</strong></td>
+                    <td><a href="https://giga.chat/" target="_blank" rel="noreferrer">giga.chat</a></td>
+                    <td>Российский ИИ-инструмент для обработки файлов, включая транскрибацию и анализ аудио.</td>
+                    <td>
+                      <ul>
+                        <li>Обработка данных из различных типов файлов (включая аудио)</li>
+                        <li>Интегрированная работа с текстом, изображениями и голосовыми файлами</li>
+                      </ul>
+                    </td>
+                    <td>Максимальный размер одного аудиофайла — 30 Мб</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Яндекс Алиса Про</strong></td>
+                    <td><a href="https://alicepro.yandex.ru/expert" target="_blank" rel="noreferrer">alicepro.yandex.ru</a></td>
+                    <td>ИИ-помощник, интегрированный в Yandex 360, с фокусом на голосовом взаимодействии и транскрибации.</td>
+                    <td>
+                      <ul>
+                        <li>Фокус на голосовом взаимодействии и работе с аудиозаписями</li>
+                        <li>Извлечение ключевой информации из записанных разговоров или файлов</li>
+                      </ul>
+                    </td>
+                    <td>До 60 Мб для загрузки аудиофайлов</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            </div>
+            <div class="case-block-section">
+              <h4>Промпт</h4>
+            <div class="prompt-block prompt-block-tall">
+              <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+              <pre>Вы — экспертный аналитик лекций и публичных выступлений. Ваша задача — по загруженному аудиофайлу (или расшифровке речи) создать структурированный аналитический отчёт по лекции. Ваша цель — представить ключевые идеи и рекомендации в формате, аналогичном документу, обобщающему содержание лекции.
+
+В вашем ответе сосредоточьтесь на извлечении и представлении следующей информации, используя лаконичный и прямой язык, без добавления информации, отсутствующей в оригинальном тексте, или личных комментариев. Пишите живо, ясно, по делу, сохраняя аналитичность. Используйте стиль, понятный широкой педагогической аудитории. Не пересказывайте дословно — обобщайте и интерпретируйте.
+
+Структура Аналитического Отчета:
+
+1. Общая Тема и Цель Выступления
+   Тема выступления: Кратко сформулируйте основную тему лекции (1 строка).
+   Описание (аннотация): Сжато изложите суть лекции, её значимость и общий замысел. Какова главная цель выступления оратора? (3–5 предложений)
+
+2. Развёрнутое Описание Лекции
+   Подробно опишите, о чём шла речь в лекции. Какова основная тема, которую затрагивает оратор? Какие ключевые идеи, логика раскрытия, примеры и выводы затрагивались? (Примерно 200–300 слов).
+
+3. Основные Тезисы и Важные Понятия
+   Выделите центральные утверждения, концепции или аргументы, которые оратор развивает. Присутствуют ли какие-либо специфические термины, понятия или определения, которые оратор вводит или объясняет? Представьте не менее 5 тезисов, каждый из которых включает:
+   • Заголовок (до 10 слов)
+   • Описание (разъяснение сути тезиса, примеры, ключевые мысли, 2–4 предложения)
+
+4. Преимущества и Последствия Предложенного
+   Каковы положительные стороны, выгоды или ожидаемые результаты, которые оратор связывает с обсуждаемыми идеями или подходами?
+
+5. Практические Рекомендации и Действия
+   Перечислите конкретные советы, стратегии или шаги, которые оратор предлагает аудитории. Представьте их в виде четкого, пронумерованного списка (не менее 10 пунктов).
+
+6. Значимые Цитаты
+   Извлеките любые яркие или запоминающиеся высказывания оратора, которые хорошо передают суть его сообщения. (Если есть цитаты, вставляйте их для усиления ключевых мыслей).
+
+7. Заключение
+   Как оратор завершает свое выступление? Каково главное послание или вывод, который он хочет, чтобы аудитория запомнила? Какова итоговая мысль лекции и возможное переосмысление темы после её прослушивания?
+
+8. Хештеги
+   Укажите 4 хештега, каждый из которых состоит из одного слова и отражает суть лекции.</pre>
+            </div>
+            </div>
+            <div class="case-block-section">
+              <h4>Пример</h4>
+            <div class="download-grid">
+              <div class="download-card">
+                <div>
+                  <a href="./ex/ex_3.mp3" download>
+                    <span class="download-icon" aria-hidden="true">🎧</span>
+                    <span>ex_3.mp3</span>
+                  </a>
+                  <p class="download-card-desc">Пример аудиолекции для анализа</p>
+                </div>
+              </div>
+            </div>
+            </div>
+          </article>
+
+          <!-- Кейс 3 -->
+          <article class="case-panel case-block" id="case3">
+            <div class="case-block-title"><span class="num">Кейс 3</span><h2>Разработка приложений</h2></div>
+            <div class="case-block-section">
+              <h4>Ссылки</h4>
+            <div class="case-links">
+              <a href="https://zuevpu.github.io/motiv/" target="_blank" rel="noreferrer">Пример результата → zuevpu.github.io/motiv</a>
+              <a href="https://chat.deepseek.com/share/o9zzf05clbgk9neyci" target="_blank" rel="noreferrer">Пример промпта в DeepSeek →</a>
+            </div>
+            </div>
+            <div class="case-block-section">
+              <h4>Промпт</h4>
+            <div class="prompt-block prompt-block-wide">
+              <button class="btn btn-small copy-prompt" type="button" data-copy>Копировать</button>
+              <pre>ROLE:
+Ты — эксперт-разработчик интерактивных образовательных инструментов и UI-дизайнер, специализирующийся на преобразовании психологических, педагогических и управленческих тестов в адаптивные веб-интерфейсы. Работаешь в строгом соответствии с принципами педагогической этики, научной точности и UX-доступности.
+
+TASK:
+Создай полностью автономную веб-страницу (HTML + встроенный CSS + JS) с интерактивным опросником на основе загруженного файла с тестом.
+
+ТЕХНИЧЕСКИЕ ТРЕБОВАНИЯ:
+1. Формат вывода: единый HTML-файл, готовый к немедленному использованию
+2. Технологии: чистый HTML, CSS, JavaScript без внешних зависимостей
+3. Адаптивность: мобильный-first дизайн, оптимизированный для сенсорных устройств
+
+UI/UX ТРЕБОВАНИЯ:
+1. СОВРЕМЕННЫЙ ИНТЕРФЕЙС: Минималистичный дизайн с тёмной/нейтральной темой; мягкие тени, скругления, плавные анимации; чёткая визуальная иерархия
+2. СТРУКТУРА СТРАНИЦЫ: Вводный блок с описанием и инструкцией; визуальный индикатор прогресса; карточки вопросов; блок результатов с визуализацией
+3. МЕХАНИКА ВВОДА: ИНТУИТИВНОЕ УПРАВЛЕНИЕ БЕЗ КЛАВИАТУРЫ; тапабельные элементы большого размера; визуальная обратная связь; последовательное ранжирование через multiple taps; цветовое кодирование приоритетов
+
+ФУНКЦИОНАЛЬНЫЕ ТРЕБОВАНИЯ:
+1. ЛОГИКА ТЕСТА: Точное воспроизведение механики; автоматическая валидация; предотвращение ошибок ввода; визуальные подсказки о состоянии
+2. РАСЧЁТ РЕЗУЛЬТАТОВ: Автоматический подсчёт баллов; определение ведущих показателей; визуализация (бар-чарты, шкалы); текстовая интерпретация
+3. ИНТЕРАКТИВНОСТЬ: Кнопка "Показать результаты" с проверкой полноты; кнопка "Сбросить"; плавные переходы и скроллинг
+
+КОНТЕНТНЫЕ ТРЕБОВАНИЯ:
+Академический стиль, инклюзивный язык, научная обоснованность. При необходимости — переработка текста в чёткие вопросы, выделение категорий/шкал, сохранение методологии подсчёта.
+
+OUTPUT: Единый HTML-файл с встроенными CSS и JS. Готов к использованию в браузере. Без внешних зависимостей.
+
+SPECIAL: Особое внимание МОБИЛЬНОЙ МЕХАНИКЕ ВВОДА — пользователь должен пройти тест полностью без клавиатуры, через последовательные нажатия.</pre>
+            </div>
+            </div>
+            <div class="case-block-section">
+              <h4>Пример документа</h4>
+            <div class="download-grid">
+              <div class="download-card">
+                <div>
+                  <a href="./ex/ex_4.doc" download>
+                    <span class="download-icon" aria-hidden="true">📄</span>
+                    <span>ex_4.doc</span>
+                  </a>
+                  <p class="download-card-desc">Шаблон теста для создания веб-приложения</p>
+                </div>
+              </div>
+            </div>
+            </div>
+            <div class="case-block-section">
+              <h4>Запуск сайта (Этап 1 и 2)</h4>
+            <div class="steps-grid">
+              <div class="step-card">
+                <h4>Этап 1. Создание с DeepSite</h4>
+                <ol>
+                  <li>Откройте <a href="https://enzostvsdeepsite.hf.space/" target="_blank" rel="noreferrer">DeepSite</a></li>
+                  <li>Сгенерируйте лендинг (кнопка генерации long-read)</li>
+                  <li>Скопируйте полученный код</li>
+                  <li>Вставьте в Блокнот → Сохранить как → <strong>index.html</strong> (тип: Все файлы)</li>
+                </ol>
+              </div>
+              <div class="step-card">
+                <h4>Этап 2. Размещение на GitHub Pages</h4>
+                <ol>
+                  <li>Зарегистрируйтесь на <a href="https://github.com/" target="_blank" rel="noreferrer">GitHub</a></li>
+                  <li>Создайте репозиторий (Public)</li>
+                  <li>Add file → Upload files → загрузите index.html</li>
+                  <li>Settings → Pages → Branch: main → Save</li>
+                  <li>Через 1–5 мин получите ссылку на сайт</li>
+                </ol>
+              </div>
+            </div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer" role="contentinfo">
+      <div class="container footer-row">
+        <div class="muted"><strong>EduBench</strong> · Кейсы</div>
+        <div class="muted">© <span id="year"></span></div>
+      </div>
+    </footer>
+
+    <script>
+      (function() {
+        const $ = (sel, r = document) => r.querySelector(sel);
+        const $$ = (sel, r = document) => Array.from(r.querySelectorAll(sel));
+
+        function toast(msg) {
+          let el = $("#toast");
+          if (!el) {
+            el = document.createElement("div");
+            el.id = "toast";
+            el.className = "toast";
+            document.body.appendChild(el);
+          }
+          el.textContent = msg;
+          el.classList.add("is-visible");
+          clearTimeout(toast._t);
+          toast._t = setTimeout(() => el.classList.remove("is-visible"), 1400);
+        }
+
+        document.getElementById("year")?.replaceChildren(String(new Date().getFullYear()));
+
+        document.querySelectorAll(".bento-card[href^='#']").forEach(card => {
+          card.addEventListener("click", (e) => {
+            e.preventDefault();
+            const id = card.getAttribute("href").slice(1);
+            document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+          });
+        });
+
+        $$("[data-copy]").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            const block = btn.closest(".prompt-block");
+            const pre = block?.querySelector("pre");
+            const text = pre?.textContent?.trim() || "";
+            try {
+              await navigator.clipboard.writeText(text);
+              toast("Промпт скопирован");
+            } catch {
+              toast("Не удалось скопировать");
+            }
+          });
+        });
+        const navToggle = document.getElementById("navToggle");
+        const navWrap = document.querySelector(".nav-wrap");
+        if (navToggle && navWrap) {
+          navToggle.addEventListener("click", () => {
+            navWrap.classList.toggle("is-open");
+            navToggle.setAttribute("aria-expanded", navWrap.classList.contains("is-open"));
+          });
+          navWrap.querySelectorAll(".top-actions .link").forEach(l => l.addEventListener("click", () => navWrap.classList.remove("is-open")));
+        }
+      })();
+    </script>
+  </body>
+</html>
