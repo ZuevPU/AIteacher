@@ -608,6 +608,66 @@ a{ color: inherit; }
   flex-wrap: wrap;
 }
 
+/* Prompts & Cases shared */
+.memo-intro{ background: rgba(255,255,255,0.66); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
+.memo-intro h2{ margin: 0 0 12px; font-size: 1.15rem; }
+.memo-intro ul{ margin: 8px 0 0; padding-left: 20px; color: var(--muted); }
+.prompt-block{ margin: 10px 0; padding: 12px; background: rgba(15,23,42,0.03); border-radius: 12px; border: 1px solid var(--border); position: relative; }
+.prompt-block pre{ margin: 0; white-space: pre-wrap; word-break: break-word; font-size: 13px; max-height: 320px; overflow: auto; }
+.prompt-block.prompt-block-tall pre{ max-height: 420px; }
+.prompt-block.prompt-block-wide pre{ max-height: 500px; }
+.prompt-block .copy-prompt{ position: absolute; top: 10px; right: 10px; padding: 10px 14px; min-height: 44px; font-size: 12px; }
+.category-section{ margin-bottom: 20px; }
+.category-section summary{ cursor: pointer; padding: 12px 14px; font-weight: 700; border-radius: var(--radius); background: var(--surface-2); border: 1px solid var(--border); list-style: none; }
+.category-section summary::-webkit-details-marker{ display: none; }
+.category-section[open] summary{ border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.category-section .category-body{ padding: 14px; border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius) var(--radius); background: var(--surface); }
+.prompt-item{ margin-bottom: 14px; }
+.prompt-item:last-child{ margin-bottom: 0; }
+.prompt-label{ font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.memo-search-wrap{ margin-bottom: 16px; }
+.memo-badges{ display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.memo-badge{ padding: 6px 10px; border-radius: 999px; background: var(--primary-soft); border: 1px solid rgba(37,99,235,0.22); color: var(--primary-700); font-size: 12px; font-weight: 600; cursor: pointer; }
+.memo-badge:hover{ filter: brightness(1.05); }
+.memo-badge.active{ background: var(--primary); color: white; border-color: var(--primary); }
+.case-panel{ background: rgba(255,255,255,0.66); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 24px; box-shadow: var(--shadow-sm); }
+.case-panel h2{ margin: 0 0 14px; font-size: 1.15rem; }
+.case-links{ display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+.case-links a{ display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--primary-soft); border: 1px solid rgba(37,99,235,0.22); border-radius: 12px; color: var(--primary-700); font-weight: 600; text-decoration: none; }
+.case-links a:hover{ background: rgba(37,99,235,0.18); text-decoration: none; }
+.steps-grid{ display: grid; gap: 16px; margin-top: 16px; }
+.step-card{ padding: 14px 16px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); }
+.step-card h4{ margin: 0 0 8px; font-size: 14px; }
+.step-card ol{ margin: 0; padding-left: 20px; font-size: 13px; color: var(--muted); line-height: 1.6; }
+.step-card a{ color: var(--primary); text-decoration: none; }
+.step-card a:hover{ text-decoration: underline; }
+.nets-table{ width: 100%; border-collapse: collapse; font-size: 14px; }
+.nets-table th, .nets-table td{ padding: 12px 14px; text-align: left; border: 1px solid var(--border); }
+.nets-table th{ background: var(--surface-2); font-weight: 700; }
+.nets-table tr:nth-child(even){ background: rgba(15,23,42,0.02); }
+.nets-table a{ color: var(--primary); text-decoration: none; }
+.nets-table a:hover{ text-decoration: underline; }
+.nets-table ul{ margin: 6px 0 0; padding-left: 18px; }
+.download-grid{ display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.download-card{ display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); }
+.download-card a{ display: flex; align-items: center; gap: 10px; color: var(--primary); font-weight: 600; text-decoration: none; }
+.download-card a:hover{ text-decoration: underline; }
+.download-card-desc{ font-size: 12px; color: var(--muted); margin: 4px 0 0; font-weight: 400; }
+.download-icon{ font-size: 24px; }
+.bento-grid{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 32px; }
+.bento-card{ display: block; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); text-decoration: none; color: inherit; transition: border-color 0.15s, box-shadow 0.15s; }
+.bento-card:hover{ border-color: rgba(37,99,235,0.3); box-shadow: var(--shadow); }
+.bento-card-num{ font-size: 12px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+.bento-card-title{ font-weight: 760; font-size: 1rem; margin: 0 0 8px; }
+.bento-card-desc{ font-size: 13px; color: var(--muted); margin: 0; line-height: 1.45; }
+.case-block{ margin-bottom: 28px; scroll-margin-top: 80px; }
+.case-block-title{ display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.case-block-title .num{ font-size: 12px; font-weight: 700; color: var(--primary); }
+.case-block-title h2{ margin: 0; font-size: 1.1rem; }
+.case-block-section{ margin-bottom: 18px; }
+.case-block-section:last-child{ margin-bottom: 0; }
+.case-block-section h4{ margin: 0 0 8px; font-size: 13px; font-weight: 700; color: var(--muted); }
+
 /* Responsive */
 @media (min-width: 640px){
   .card{ grid-column: span 6; }
@@ -619,9 +679,17 @@ a{ color: inherit; }
   .benchmark-layout{ grid-template-columns: 1fr; }
   .case-nav{ position: relative; }
 }
+@media (max-width: 900px){
+  .bento-grid{ grid-template-columns: 1fr; }
+}
 @media (max-width: 760px){
   .hero-grid{ grid-template-columns: 1fr; }
   .nav-toggle{ display: flex; }
+  .nets-table{ display: block; font-size: 12px; }
+  .nets-table th, .nets-table td{ display: block; padding: 10px; }
+  .nets-table tr{ margin-bottom: 12px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .nets-table th{ border-bottom: 1px solid var(--border); }
+  .download-grid{ grid-template-columns: 1fr; }
   .top-actions{
     display: none;
     position: absolute;

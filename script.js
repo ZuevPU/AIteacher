@@ -6,38 +6,38 @@
   const MODELS = [
     {
       key: "alice",
-      name: "Alice",
-      url: "https://alice.yandex.ru/",
+      name: "Яндекс Алиса",
+      url: "https://alicepro.yandex.ru/expert",
       country: "Россия",
-      desc: "Большая языковая модель, разработанная... (заглушка для описания).",
+      desc: "ИИ-помощник Яндекса для диалога, анализа документов и структурирования данных. Поддержка текста и голоса.",
     },
     {
       key: "gigachat",
       name: "GigaChat",
       url: "https://giga.chat/",
       country: "Россия",
-      desc: "Большая языковая модель, разработанная... (заглушка для описания).",
+      desc: "Российская LLM от Сбера. Генерация текста, анализ данных, режим «Провести исследование» для отчётов.",
     },
     {
       key: "deepseek",
       name: "Deepseek Chat",
       url: "https://www.deepseek.com/",
       country: "Китай",
-      desc: "Большая языковая модель, разработанная... (заглушка для описания).",
+      desc: "ИИ-платформа для кода и аналитики. Высокая точность в математике, логике и работе со структурированными данными.",
     },
     {
       key: "qwen",
       name: "Qwen",
       url: "https://chat.qwen.ai/",
       country: "Китай",
-      desc: "Большая языковая модель, разработанная... (заглушка для описания).",
+      desc: "Мультимодальная LLM Alibaba. Большое контекстное окно, Deep Research, поддержка текста и изображений.",
     },
     {
       key: "mistral",
       name: "Mistral",
       url: "https://mistral.ai/",
-      country: "Франция/США (Европа/США)",
-      desc: "Большая языковая модель, разработанная... (заглушка для описания).",
+      country: "Франция/США",
+      desc: "Эффективная LLM для корпоративного применения. Быстрый вывод, расширенное рассуждение, работа с документами.",
     },
   ];
 
@@ -345,6 +345,62 @@
     return CASE_RESULT_FILES?.[caseId]?.[modelKey] || "";
   }
 
+  function createResultIframe(caseId, m, src, host) {
+    host.textContent = "";
+    const iframe = document.createElement("iframe");
+    iframe.className = "result-frame";
+    iframe.setAttribute("title", `Результат: ${m.name} — кейс ${caseId}`);
+    iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-modals");
+    iframe.setAttribute("scrolling", "no");
+    iframe.setAttribute("referrerpolicy", "no-referrer");
+    iframe.src = src;
+    iframe.addEventListener("load", () => {
+      const tryResize = () => {
+        try {
+          const doc = iframe.contentDocument;
+          if (!doc) return false;
+          const body = doc.body;
+          const html = doc.documentElement;
+          const h = Math.max(
+            body ? body.scrollHeight : 0,
+            body ? body.offsetHeight : 0,
+            html ? html.scrollHeight : 0,
+            html ? html.offsetHeight : 0,
+            html ? html.clientHeight : 0,
+          );
+          if (h > 0) iframe.style.height = `${h}px`;
+          return h > 0;
+        } catch {
+          return false;
+        }
+      };
+      tryResize();
+      setTimeout(tryResize, 120);
+      setTimeout(tryResize, 420);
+      setTimeout(tryResize, 900);
+      const windowEl = host.closest(".result-window");
+      const hintEl = windowEl?.querySelector(".result-window-hint");
+      if (hintEl) hintEl.textContent = "Загружено";
+    });
+    host.appendChild(iframe);
+  }
+
+  function ensureCaseOutputMounted(caseId, modelKey) {
+    const mapping = CASE_RESULT_FILES?.[caseId] || {};
+    const m = MODELS.find((x) => x.key === modelKey);
+    if (!m) return;
+    const src = mapping[modelKey] || "";
+    const outId = `case${caseId}-${modelKey}-output`;
+    const host = document.getElementById(outId);
+    if (!host || !src) return;
+    const existing = host.querySelector("iframe.result-frame");
+    if (existing && existing.getAttribute("src") === src) return;
+    const windowEl = host.closest(".result-window");
+    const hintEl = windowEl?.querySelector(".result-window-hint");
+    if (hintEl) hintEl.textContent = "Загрузка…";
+    createResultIframe(caseId, m, src, host);
+  }
+
   function mountCaseOutputs(caseId) {
     const mapping = CASE_RESULT_FILES?.[caseId] || {};
     MODELS.forEach((m) => {
@@ -353,61 +409,25 @@
       const src = mapping[m.key] || "";
       if (!host) return;
 
-      // Update hint in the window bar
       const windowEl = host.closest(".result-window");
       const hintEl = windowEl ? windowEl.querySelector(".result-window-hint") : null;
-      if (hintEl) hintEl.textContent = src ? "Загружено" : "Нет данных";
 
       if (!src) {
+        if (hintEl) hintEl.textContent = "Нет данных";
         host.innerHTML = `<div class="placeholder">Нет результата для <strong>${escapeHtml(m.name)}</strong> в <strong>кейсе ${caseId}</strong>.</div>`;
         return;
       }
 
-      // Avoid remount if already mounted with same src
       const existing = host.querySelector("iframe.result-frame");
       if (existing && existing.getAttribute("src") === src) return;
 
-      host.textContent = "";
-      const iframe = document.createElement("iframe");
-      iframe.className = "result-frame";
-      iframe.setAttribute("title", `Результат: ${m.name} — кейс ${caseId}`);
-      // Важно для корректной работы примеров:
-      // - allow-modals: примеры с alert()
-      // - allow-same-origin: localStorage и доступ к размерам документа (когда браузер разрешит)
-      iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-modals");
-      iframe.setAttribute("scrolling", "no");
-      iframe.setAttribute("referrerpolicy", "no-referrer");
-      iframe.src = src;
-      iframe.addEventListener("load", () => {
-        // Пытаемся подогнать высоту под контент, чтобы внутри iframe не было полос прокрутки.
-        // Если браузер не даст доступ к содержимому (часто бывает на file://), останется fallback height из CSS.
-        const tryResize = () => {
-          try {
-            const doc = iframe.contentDocument;
-            if (!doc) return false;
-            const body = doc.body;
-            const html = doc.documentElement;
-            const h = Math.max(
-              body ? body.scrollHeight : 0,
-              body ? body.offsetHeight : 0,
-              html ? html.scrollHeight : 0,
-              html ? html.offsetHeight : 0,
-              html ? html.clientHeight : 0,
-            );
-            if (h > 0) iframe.style.height = `${h}px`;
-            return h > 0;
-          } catch {
-            return false;
-          }
-        };
-
-        // Несколько попыток (на случай поздней отрисовки/шрифтов/анимаций)
-        tryResize();
-        setTimeout(tryResize, 120);
-        setTimeout(tryResize, 420);
-        setTimeout(tryResize, 900);
-      });
-      host.appendChild(iframe);
+      if (m.key === activeModelKey) {
+        if (hintEl) hintEl.textContent = "Загрузка…";
+        createResultIframe(caseId, m, src, host);
+      } else {
+        if (hintEl) hintEl.textContent = "—";
+        host.innerHTML = `<div class="iframe-lazy-placeholder" data-src="${escapeHtml(src)}" data-model-key="${escapeHtml(m.key)}"><div class="skeleton"><div class="skeleton-line w-90"></div><div class="skeleton-line w-75"></div><div class="skeleton-line w-60"></div></div></div>`;
+      }
     });
   }
 
@@ -415,6 +435,8 @@
     activeModelKey = modelKey;
     const view = $("#caseView");
     if (!view) return;
+
+    ensureCaseOutputMounted(activeCaseId, modelKey);
 
     $$(".model-tab[data-model-tab]", view).forEach((btn) => {
       const active = btn.dataset.modelTab === modelKey;
